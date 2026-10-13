@@ -1,0 +1,300 @@
+{
+  "archetypeName": "Earth_Machine_Sample",
+  "version": "1.0.0",
+  "standardStarters": ["67234805", "83487532"],
+  "primaryExtenders": ["25377819", "58836875"],
+  "insulationTargets": ["84815190", "24224830"],
+  "cards": [
+    {
+      "id": "67234805",
+      "name": "Infinitrack Harvester",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 2,
+        "atk": 0,
+        "def": 2100
+      },
+      "archetypes": ["Infinitrack"],
+      "taxonomyRole": "STARTER_NS",
+      "effects": [
+        {
+          "effectId": "harvester_on_summon",
+          "hoptGroup": "HOPT_HARVESTER_SEARCH",
+          "category": "TRIGGER",
+          "activationLocation": ["FIELD_M"],
+          "spellSpeed": 1,
+          "conditions": [{ "type": "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED" }],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH",
+              "from": "DECK",
+              "to": "HAND",
+              "filter": {
+                "archetype": "Infinitrack",
+                "cardType": "MONSTER",
+                "excludeId": "67234805"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "83487532",
+      "name": "Exceptional Schedule",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": ["Schedule"],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "exceptional_activate",
+          "hoptGroup": "HOPT_EXCEPTIONAL_SCHEDULE",
+          "category": "IGNITION",
+          "activationLocation": ["HAND"],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH",
+              "from": "DECK",
+              "to": "HAND",
+              "filter": {
+                "archetype": "Schedule"
+              }
+            },
+            {
+              "type": "SPECIAL_SUMMON",
+              "to": "FIELD_M",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "58836875",
+      "name": "Urgent Schedule",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": ["Schedule"],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "urgent_schedule_activate",
+          "hoptGroup": "HOPT_URGENT_SCHEDULE",
+          "category": "QUICK",
+          "activationLocation": ["HAND", "FIELD_S"],
+          "spellSpeed": 2,
+          "conditions": [
+            { "type": "OPPONENT_CONTROLS_MONSTER" }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON",
+              "from": "DECK",
+              "to": "FIELD_M",
+              "count": 2,
+              "filter": {
+                "race": "Machine",
+                "attribute": "EARTH"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "25377819",
+      "name": "Infinitrack River Stormer",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 5,
+        "atk": 2500,
+        "def": 500
+      },
+      "archetypes": ["Infinitrack"],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "river_stormer_search",
+          "hoptGroup": "HOPT_RIVER_STORMER",
+          "category": "IGNITION",
+          "activationLocation": ["FIELD_M"],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [{ "type": "DETACH_XYZ_MATERIAL", "amount": 1 }],
+          "resolution": [
+            {
+              "type": "SEARCH",
+              "from": "DECK",
+              "to": "HAND",
+              "filter": { "race": "Machine", "attribute": "EARTH" }
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "FIELD",
+            "kind": "SPOT_REMOVAL",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "58858807",
+      "name": "Qliphort Genius",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 2,
+        "atk": 1800,
+        "linkRating": 2,
+        "linkArrows": ["BL", "BR"]
+      },
+      "archetypes": ["Qliphort"],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "genius_negate",
+          "category": "TRIGGER",
+          "activationLocation": ["FIELD_M"],
+          "spellSpeed": 1,
+          "conditions": [{ "type": "CHAIN_LINK_EXISTS" }],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "FIELD_TARGET"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "FIELD",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "24224830",
+      "name": "Called by the Grave",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "called_by_grave_banish",
+          "category": "QUICK",
+          "activationLocation": ["HAND", "FIELD_S"],
+          "spellSpeed": 2,
+          "conditions": [{ "type": "CHAIN_LINK_EXISTS" }],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "BANISH",
+              "from": "GRAVEYARD",
+              "to": "BANISHED"
+            },
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "MONSTER_NEGATE",
+            "removalType": "BANISH",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "14558127",
+      "name": "Ash Blossom & Joyous Spring",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Zombie",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "ash_blossom_negate",
+          "hoptGroup": "HOPT_ASH_BLOSSOM",
+          "category": "QUICK",
+          "activationLocation": ["HAND"],
+          "spellSpeed": 2,
+          "conditions": [
+            { "type": "OPPONENT_ACTIVATED_EFFECT" },
+            { "type": "EFFECT_INCLUDES_DECK_SEARCH_OR_MILL_OR_SS" }
+          ],
+          "costs": [{ "type": "DISCARD_THIS_CARD" }],
+          "resolution": [{ "type": "NEGATE_EFFECT", "target": "PREVIOUS_CHAIN_LINK" }],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "84815190",
+      "name": "Baronne de Fleur",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Warrior",
+        "levelOrRank": 10,
+        "atk": 3000,
+        "def": 2400
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "baronne_omni_negate",
+          "category": "QUICK",
+          "activationLocation": ["FIELD_M"],
+          "spellSpeed": 2,
+          "conditions": [{ "type": "CHAIN_LINK_EXISTS" }],
+          "costs": [],
+          "resolution": [
+            { "type": "NEGATE_ACTIVATION", "target": "PREVIOUS_CHAIN_LINK" },
+            { "type": "DESTROY", "target": "PREVIOUS_CHAIN_LINK_CARD" }
+          ],
+          "interruptionProfile": {
+            "layer": "FIELD",
+            "kind": "OMNI_NEGATE",
+            "removalType": "DESTROY",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["EVENLY_MATCHED"]
+          }
+        }
+      ]
+    }
+  ]
+}
