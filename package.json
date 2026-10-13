@@ -1,0 +1,50 @@
+{
+  "name": "@ygo/sim-core",
+  "version": "1.0.0",
+  "description": "High-performance deterministic Yu-Gi-Oh! combo simulator, YBN valuation engine, and MCP server",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ygo-sim-core": "dist/bin/ygo-sim-core.js",
+    "ygo-sim-server": "dist/mcp/server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json",
+    "start": "node dist/mcp/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/ test/ bin/",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"bin/**/*.ts\""
+  },
+  "keywords": [
+    "yugioh",
+    "combo-simulator",
+    "mcp",
+    "ybn",
+    "ygn",
+    "deterministic",
+    "monte-carlo"
+  ],
+  "author": "Obsidian YGO Suite Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "commander": "^12.1.0",
+    "xxhashjs": "^0.2.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/xxhashjs": "^0.2.4",
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
