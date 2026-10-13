@@ -19,21 +19,21 @@ export interface CardInstance {
   cardType: 'MONSTER' | 'SPELL' | 'TRAP';
 
   // Monster runtime state
-  atk?: number;
-  def?: number;
-  levelOrRank?: number;
-  materials?: CardInstance[]; // Attached Xyz materials
-  position?: MonsterPosition;
-  isNegated?: boolean;
-  canAttack?: boolean;
+  atk?: number | undefined;
+  def?: number | undefined;
+  levelOrRank?: number | undefined;
+  materials?: CardInstance[] | undefined; // Attached Xyz materials
+  position?: MonsterPosition | undefined;
+  isNegated?: boolean | undefined;
+  canAttack?: boolean | undefined;
 
   // Spell/Trap runtime state
-  spellTrapState?: SpellTrapPosition;
-  turnSet?: number; // Turn number when this card was set
+  spellTrapState?: SpellTrapPosition | undefined;
+  turnSet?: number | undefined; // Turn number when this card was set
 
   // Graveyard / Banished tracking
-  turnSentToGY?: number;
-  isFaceDownBanished?: boolean;
+  turnSentToGY?: number | undefined;
+  isFaceDownBanished?: boolean | undefined;
 }
 
 export interface PlayerZones {
@@ -44,7 +44,7 @@ export interface PlayerZones {
   spells: Partial<Record<SpellTrapZoneId, CardInstance>>;
 
   // Dedicated Field Spell Zone
-  fieldSpell?: CardInstance;
+  fieldSpell?: CardInstance | undefined;
 
   // Shared Extra Monster Zones (keyed by player perspective)
   extraMonsters: Partial<Record<ExtraMonsterZoneId, CardInstance>>;
@@ -95,8 +95,8 @@ export interface GameState {
 
   // History & Provenance
   stepIndex: number;
-  parentHash?: string;
-  actionTaken?: string; // YGN verb that created this state
+  parentHash?: string | undefined;
+  actionTaken?: string | undefined; // YGN verb that created this state
 }
 
 /**
@@ -104,3 +104,118 @@ export interface GameState {
  * "T<turn>|<phase>|LP<P1>:<P2>|P1:<zones>|P2:<zones>|G:<gates>"
  */
 export type YBNString = string;
+
+export function createEmptyPlayerZones(): PlayerZones {
+  return {
+    monsters: {},
+    spells: {},
+    extraMonsters: {},
+    hand: [],
+    graveyard: [],
+    banished: [],
+    deck: [],
+    extraDeck: []
+  };
+}
+
+export function createInitialGameState(overrides?: Partial<GameState>): GameState {
+  return {
+    turn: 1,
+    phase: 'M1',
+    turnPlayer: 1,
+    priorityHolder: 1,
+    lifePoints: {
+      player1: 8000,
+      player2: 8000
+    },
+    p1: createEmptyPlayerZones(),
+    p2: createEmptyPlayerZones(),
+    gates: {
+      normalSummonAvailable: true,
+      specialSummonCount: 0,
+      attacksDeclared: 0
+    },
+    registers: {
+      hoptActivated: new Set<string>(),
+      soptActivated: new Set<string>(),
+      cardsSentToGYThisTurn: new Set<string>()
+    },
+    locks: {
+      lockedIntoFire: false,
+      lockedIntoXyz: false,
+      lockedIntoLink: false,
+      lockedIntoMachine: false,
+      cannotSpecialSummonFromExtra: false,
+      opponentDrawsOnSpecialSummon: false
+    },
+    stepIndex: 0,
+    ...overrides
+  };
+}
+
+export function cloneCardInstance(card: CardInstance): CardInstance {
+  return {
+    ...card,
+    materials: card.materials ? card.materials.map(cloneCardInstance) : undefined
+  };
+}
+
+export function clonePlayerZones(zones: PlayerZones): PlayerZones {
+  const clonedMonsters: Partial<Record<MainMonsterZoneId, CardInstance>> = {};
+  for (const [k, v] of Object.entries(zones.monsters) as [
+    MainMonsterZoneId,
+    CardInstance | undefined
+  ][]) {
+    if (v) clonedMonsters[k] = cloneCardInstance(v);
+  }
+
+  const clonedSpells: Partial<Record<SpellTrapZoneId, CardInstance>> = {};
+  for (const [k, v] of Object.entries(zones.spells) as [
+    SpellTrapZoneId,
+    CardInstance | undefined
+  ][]) {
+    if (v) clonedSpells[k] = cloneCardInstance(v);
+  }
+
+  const clonedExtraMonsters: Partial<Record<ExtraMonsterZoneId, CardInstance>> = {};
+  for (const [k, v] of Object.entries(zones.extraMonsters) as [
+    ExtraMonsterZoneId,
+    CardInstance | undefined
+  ][]) {
+    if (v) clonedExtraMonsters[k] = cloneCardInstance(v);
+  }
+
+  return {
+    monsters: clonedMonsters,
+    spells: clonedSpells,
+    fieldSpell: zones.fieldSpell ? cloneCardInstance(zones.fieldSpell) : undefined,
+    extraMonsters: clonedExtraMonsters,
+    hand: zones.hand.map(cloneCardInstance),
+    graveyard: zones.graveyard.map(cloneCardInstance),
+    banished: zones.banished.map(cloneCardInstance),
+    deck: zones.deck.map(cloneCardInstance),
+    extraDeck: zones.extraDeck.map(cloneCardInstance)
+  };
+}
+
+export function cloneGameState(state: GameState): GameState {
+  return {
+    turn: state.turn,
+    phase: state.phase,
+    turnPlayer: state.turnPlayer,
+    priorityHolder: state.priorityHolder,
+    lifePoints: { ...state.lifePoints },
+    p1: clonePlayerZones(state.p1),
+    p2: clonePlayerZones(state.p2),
+    gates: { ...state.gates },
+    registers: {
+      hoptActivated: new Set(state.registers.hoptActivated),
+      soptActivated: new Set(state.registers.soptActivated),
+      cardsSentToGYThisTurn: new Set(state.registers.cardsSentToGYThisTurn)
+    },
+    locks: { ...state.locks },
+    stepIndex: state.stepIndex,
+    parentHash: state.parentHash,
+    actionTaken: state.actionTaken
+  };
+}
