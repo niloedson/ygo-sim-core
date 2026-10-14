@@ -5,3 +5,4 @@ export * from './segoc.js';
 export * from './conjunctions.js';
 export * from './actionDiscovery.js';
 export * from './insulationEvaluator.js';
+export * from './interruptionInjector.js';
