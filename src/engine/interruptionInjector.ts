@@ -103,9 +103,15 @@ export function applyNibiruWipe(state: GameState, player: 1 | 2 = state.turnPlay
  * Estimate a baseline end-board quality score for a terminal state.
  * (Full mathematical V(YBN) valuation is codified in Phase 6).
  */
-export function estimateTerminalQuality(state: GameState, player: 1 | 2 = state.turnPlayer): number {
+export function estimateTerminalQuality(
+  state: GameState,
+  player: 1 | 2 = state.turnPlayer
+): number {
   const pZones = player === 1 ? state.p1 : state.p2;
-  const monsters = [...Object.values(pZones.monsters), ...Object.values(pZones.extraMonsters)].filter(Boolean);
+  const monsters = [
+    ...Object.values(pZones.monsters),
+    ...Object.values(pZones.extraMonsters)
+  ].filter(Boolean);
   const spells = Object.values(pZones.spells).filter(Boolean);
 
   let score = monsters.length * 2.5 + spells.length * 1.5 + pZones.hand.length * 0.8;
@@ -246,8 +252,7 @@ export function evaluateHandtrapResilience(
     }
   }
 
-  const avgSurvival =
-    results.reduce((acc, r) => acc + r.survivalRatio, 0) / (results.length || 1);
+  const avgSurvival = results.reduce((acc, r) => acc + r.survivalRatio, 0) / (results.length || 1);
 
   let rating: ResilienceReport['compositeResilienceRating'] = 'F';
   if (avgSurvival >= 0.95) rating = 'S';
