@@ -1,0 +1,2068 @@
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { validateArchetypeDAG } from '../dist/dsl/cardSchema.js';
+
+const revolBotsDAG = {
+  archetypeName: "RB_Revol_Bots",
+  version: "1.0.0",
+  standardStarters: [
+    "5109321",  // R.B. Stage Landing
+    "78710386", // R.B. Funk Dock
+    "73628505", // Terraforming
+    "20357457", // Pillar of the Future - Cyanos
+    "63166095", // Sky Striker Mobilize - Engage!
+    "52340444"  // Sky Striker Mecha - Hornet Drones
+  ],
+  primaryExtenders: [
+    "44573911", // R.B. Ga10 Pile Bunker
+    "33438265", // R.B. Ga10 Cutter
+    "6043161",  // R.B. Ga10 Driller
+    "79436874", // R.B. VALCan Rocket
+    "37351133", // Sky Striker Ace - Roze
+    "10604644", // Therion "King" Regulus
+    "16066654"  // R.B. Operation Test
+  ],
+  insulationTargets: [
+    "24224830", // Called by the Grave (Anti-handtrap)
+    "10604644", // Therion "King" Regulus (Omni-negate)
+    "41420027", // Solemn Judgment (Counter Trap / Omni-negate)
+    "79859067", // R.B. Next Phase (Counter Trap / Monster negate)
+    "33438265"  // R.B. Ga10 Cutter (Quick Effect Spell/Trap negate)
+  ],
+  cards: [
+    {
+      id: "5109321",
+      name: "R.B. Stage Landing",
+      cardType: "SPELL",
+      spellTrapType: "NORMAL",
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "STARTER_SS",
+      effects: [
+        {
+          effectId: "rb_stage_landing_ss",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "DECK",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        },
+        {
+          effectId: "rb_stage_landing_gy_protect",
+          category: "TRIGGER",
+          activationLocation: ["GRAVEYARD"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "BANISH_SELF_FROM_GY"
+            }
+          ],
+          resolution: []
+        }
+      ]
+    },
+    {
+      id: "52340444",
+      name: "Sky Striker Mecha - Hornet Drones",
+      cardType: "SPELL",
+      spellTrapType: "QUICK_PLAY",
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "STARTER_SS",
+      effects: [
+        {
+          effectId: "hornet_drones_ss",
+          category: "QUICK",
+          activationLocation: ["HAND", "FIELD_S"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CONTROL_NO_MONSTERS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              to: "FIELD_M",
+              count: 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "20357457",
+      name: "Pillar of the Future - Cyanos",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "LIGHT",
+        race: "Machine",
+        levelOrRank: 1,
+        atk: 500,
+        def: 1500,
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "STARTER_NS",
+      effects: [
+        {
+          effectId: "cyanos_hand_ss",
+          hoptGroup: "HOPT_CYANOS_HAND_SS",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "DISCARD_GENERIC_CARD",
+              amount: 1
+            }
+          ],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "cyanos_on_summon_ss_roze",
+          hoptGroup: "HOPT_CYANOS_SUMMON",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "DECK",
+              to: "FIELD_M",
+              filter: {
+                archetype: "Sky Striker"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "cyanos_gy_recycle",
+          hoptGroup: "HOPT_CYANOS_GY",
+          category: "IGNITION",
+          activationLocation: ["GRAVEYARD"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "BANISH_SELF_FROM_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M",
+              filter: {
+                archetype: "Sky Striker"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "44573911",
+      name: "R.B. Ga10 Pile Bunker",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Machine",
+        levelOrRank: 8,
+        atk: 1500,
+        def: 1500,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "pile_bunker_ss",
+          hoptGroup: "HOPT_PILE_BUNKER_SS",
+          category: "PROCEDURE",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "pile_bunker_attack_wipe",
+          hoptGroup: "HOPT_PILE_BUNKER_WIPE",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 1500
+            }
+          ],
+          resolution: [
+            {
+              type: "DESTROY",
+              target: "FIELD_TARGET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "33438265",
+      name: "R.B. Ga10 Cutter",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Machine",
+        levelOrRank: 4,
+        atk: 700,
+        def: 700,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "cutter_ss",
+          hoptGroup: "HOPT_CUTTER_SS",
+          category: "PROCEDURE",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "cutter_st_negate",
+          hoptGroup: "HOPT_CUTTER_NEGATE",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 700
+            },
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK"
+            },
+            {
+              type: "DESTROY",
+              target: "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "SPELL_TRAP_NEGATE",
+            removalType: "DESTROY",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["EVENLY_MATCHED"]
+          }
+        }
+      ]
+    },
+    {
+      id: "6043161",
+      name: "R.B. Ga10 Driller",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Machine",
+        levelOrRank: 3,
+        atk: 500,
+        def: 500,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "driller_ss",
+          hoptGroup: "HOPT_DRILLER_SS",
+          category: "PROCEDURE",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "driller_spot_destroy",
+          hoptGroup: "HOPT_DRILLER_POP",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 500
+            },
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "DESTROY",
+              target: "FIELD_TARGET"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "SPOT_REMOVAL",
+            removalType: "DESTROY",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: []
+          }
+        }
+      ]
+    },
+    {
+      id: "78710386",
+      name: "R.B. Funk Dock",
+      cardType: "SPELL",
+      spellTrapType: "FIELD",
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "STARTER_SS",
+      effects: [
+        {
+          effectId: "funk_dock_search",
+          hoptGroup: "HOPT_FUNK_DOCK_ACTIVATE",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                archetype: "R.B.",
+                excludeId: "78710386"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "funk_dock_float_ss",
+          hoptGroup: "HOPT_FUNK_DOCK_FLOAT",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_S"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_SENT_TO_GY"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "DECK",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "73628505",
+      name: "Terraforming",
+      cardType: "SPELL",
+      spellTrapType: "NORMAL",
+      archetypes: [],
+      taxonomyRole: "STARTER_SS",
+      effects: [
+        {
+          effectId: "terraforming_search",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                cardType: "SPELL"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "63166095",
+      name: "Sky Striker Mobilize - Engage!",
+      cardType: "SPELL",
+      spellTrapType: "NORMAL",
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "STARTER_SS",
+      effects: [
+        {
+          effectId: "engage_search_and_draw",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "CONTROL_NO_MONSTERS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                archetype: "Sky Striker",
+                excludeId: "63166095"
+              }
+            },
+            {
+              type: "DRAW",
+              count: 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "79436874",
+      name: "R.B. VALCan Rocket",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "FIRE",
+        race: "Machine",
+        levelOrRank: 5,
+        atk: 1000,
+        def: 1000,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "valcan_rocket_ss",
+          hoptGroup: "HOPT_VALCAN_ROCKET_SS",
+          category: "PROCEDURE",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "valcan_rocket_pop",
+          hoptGroup: "HOPT_VALCAN_ROCKET_POP",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 1000
+            }
+          ],
+          resolution: [
+            {
+              type: "DESTROY",
+              target: "FIELD_TARGET",
+              count: 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "37351133",
+      name: "Sky Striker Ace - Roze",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "LIGHT",
+        race: "Warrior",
+        levelOrRank: 4,
+        atk: 1500,
+        def: 1500,
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "roze_hand_ss",
+          hoptGroup: "HOPT_ROZE_HAND_SS",
+          category: "TRIGGER",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        },
+        {
+          effectId: "roze_gy_revive",
+          hoptGroup: "HOPT_ROZE_GY",
+          category: "TRIGGER",
+          activationLocation: ["GRAVEYARD"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M"
+            },
+            {
+              type: "NEGATE_EFFECT",
+              target: "FIELD_TARGET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "43450363",
+      name: "R.B. Last Stand",
+      cardType: "TRAP",
+      spellTrapType: "NORMAL",
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "ENGINE_BRICK",
+      effects: [
+        {
+          effectId: "last_stand_ss",
+          hoptGroup: "HOPT_LAST_STAND",
+          category: "QUICK",
+          activationLocation: ["FIELD_S"],
+          spellSpeed: 2,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "DECK",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        },
+        {
+          effectId: "last_stand_gy_negate",
+          hoptGroup: "HOPT_LAST_STAND",
+          category: "QUICK",
+          activationLocation: ["GRAVEYARD"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "BANISH_SELF_FROM_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          interruptionProfile: {
+            layer: "GRAVEYARD",
+            kind: "MONSTER_NEGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "14558127",
+      name: "Ash Blossom & Joyous Spring",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "FIRE",
+        race: "Zombie",
+        levelOrRank: 3,
+        atk: 0,
+        def: 1800,
+        isTuner: true
+      },
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "ash_blossom_negate",
+          hoptGroup: "HOPT_ASH_BLOSSOM",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              type: "EFFECT_INCLUDES_DECK_SEARCH_OR_MILL_OR_SS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "MONSTER_NEGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "73642296",
+      name: "Ghost Belle & Haunted Mansion",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Zombie",
+        levelOrRank: 3,
+        atk: 0,
+        def: 1800,
+        isTuner: true
+      },
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "ghost_belle_negate",
+          hoptGroup: "HOPT_GHOST_BELLE",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_ACTIVATION",
+              target: "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "MONSTER_NEGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "59438930",
+      name: "Ghost Ogre & Snow Rabbit",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "LIGHT",
+        race: "Psychic",
+        levelOrRank: 3,
+        atk: 0,
+        def: 1800,
+        isTuner: true
+      },
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "ghost_ogre_destroy",
+          hoptGroup: "HOPT_GHOST_OGRE",
+          category: "QUICK",
+          activationLocation: ["HAND", "FIELD_M"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [
+            {
+              type: "DESTROY",
+              target: "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "SPOT_REMOVAL",
+            removalType: "DESTROY",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "94145021",
+      name: "Droll & Lock Bird",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WIND",
+        race: "Spellcaster",
+        levelOrRank: 1,
+        atk: 0,
+        def: 0,
+        isTuner: false
+      },
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "droll_lock_activate",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "FLOODGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "42141493",
+      name: "Mulcharmy Fuwalos",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WIND",
+        race: "Winged Beast",
+        levelOrRank: 4,
+        atk: 100,
+        def: 600,
+        isTuner: false
+      },
+      archetypes: ["Mulcharmy"],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "fuwalos_activate",
+          hoptGroup: "HOPT_MULCHARMY",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CONTROL_NO_MONSTERS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [
+            {
+              type: "DRAW",
+              count: 1
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "FLOODGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "84192580",
+      name: "Mulcharmy Purulia",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WATER",
+        race: "Aqua",
+        levelOrRank: 4,
+        atk: 100,
+        def: 600,
+        isTuner: false
+      },
+      archetypes: ["Mulcharmy"],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "purulia_activate",
+          hoptGroup: "HOPT_MULCHARMY",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CONTROL_NO_MONSTERS"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_THIS_CARD"
+            }
+          ],
+          resolution: [
+            {
+              type: "DRAW",
+              count: 1
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "FLOODGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "81794107",
+      name: "R.B. Lambda Cannon",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 6,
+        atk: 1200,
+        def: 1200,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "lambda_cannon_salvage",
+          hoptGroup: "HOPT_LAMBDA_CANNON_SALVAGE",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "GRAVEYARD",
+              to: "HAND",
+              filter: {
+                archetype: "R.B.",
+                excludeId: "81794107"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "lambda_cannon_hand_peek",
+          hoptGroup: "HOPT_LAMBDA_CANNON_PEEK",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 1200
+            },
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "17188206",
+      name: "R.B. Lambda Blade",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 7,
+        atk: 1400,
+        def: 1400,
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "lambda_blade_mill",
+          hoptGroup: "HOPT_LAMBDA_BLADE_MILL",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "MILL",
+              from: "DECK",
+              to: "GRAVEYARD",
+              filter: {
+                archetype: "R.B.",
+                excludeId: "17188206"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "lambda_blade_take_control",
+          hoptGroup: "HOPT_LAMBDA_BLADE_STEAL",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [],
+          costs: [
+            {
+              type: "PAY_LP",
+              amount: 1400
+            },
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              target: "FIELD_TARGET"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "SPOT_REMOVAL",
+            removalType: "SEND_TO_GY",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: []
+          }
+        }
+      ]
+    },
+    {
+      id: "79859067",
+      name: "R.B. Next Phase",
+      cardType: "TRAP",
+      spellTrapType: "COUNTER",
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "ENGINE_BRICK",
+      effects: [
+        {
+          effectId: "next_phase_negate",
+          hoptGroup: "HOPT_NEXT_PHASE",
+          category: "QUICK",
+          activationLocation: ["FIELD_S"],
+          spellSpeed: 3,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "TRIBUTE_SELF"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_ACTIVATION",
+              target: "PREVIOUS_CHAIN_LINK"
+            },
+            {
+              type: "DESTROY",
+              target: "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          interruptionProfile: {
+            layer: "BACKROW",
+            kind: "MONSTER_NEGATE",
+            removalType: "DESTROY",
+            isTargeting: false,
+            spellSpeed: 3,
+            resilientAgainstWipes: ["DARK_RULER", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "24224830",
+      name: "Called by the Grave",
+      cardType: "SPELL",
+      spellTrapType: "QUICK_PLAY",
+      archetypes: [],
+      taxonomyRole: "TECH_DEFENSIVE",
+      effects: [
+        {
+          effectId: "called_by_grave_banish",
+          category: "QUICK",
+          activationLocation: ["HAND", "FIELD_S"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "BANISH",
+              from: "GRAVEYARD",
+              to: "BANISHED"
+            },
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          interruptionProfile: {
+            layer: "BACKROW",
+            kind: "MONSTER_NEGATE",
+            removalType: "BANISH",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "32216688",
+      name: "R.B. The Brute Blues",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WIND",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 3,
+        linkArrows: ["BL", "B", "BR"],
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "brute_blues_search",
+          hoptGroup: "HOPT_BRUTE_BLUES_SEARCH",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "6821579",
+      name: "R.B. VALCan Booster",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "FIRE",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 500,
+        linkRating: 2,
+        linkArrows: ["T", "B"],
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "valcan_booster_on_summon",
+          hoptGroup: "HOPT_VALCAN_BOOSTER_SEARCH",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                archetype: "R.B.",
+                cardType: "SPELL"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "valcan_booster_emz_ss",
+          hoptGroup: "HOPT_VALCAN_BOOSTER_SS",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "80071619",
+      name: "R.B. Shepherd's Crook",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 3,
+        linkArrows: ["L", "B", "BR"],
+        isTuner: false
+      },
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "shepherds_crook_set_trap",
+          hoptGroup: "HOPT_SHEPHERDS_CROOK_SET",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SET_FROM_DECK",
+              filter: {
+                archetype: "R.B.",
+                cardType: "TRAP"
+              }
+            }
+          ]
+        },
+        {
+          effectId: "shepherds_crook_opp_revival",
+          hoptGroup: "HOPT_SHEPHERDS_CROOK_RECYCLE",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "MONSTER_NEGATE",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: []
+          }
+        }
+      ]
+    },
+    {
+      id: "41739381",
+      name: "Clockwork Knight",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 500,
+        linkRating: 1,
+        linkArrows: ["L"],
+        isTuner: false
+      },
+      archetypes: [],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "clockwork_knight_search",
+          hoptGroup: "HOPT_CLOCKWORK_KNIGHT_SEARCH",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND"
+            }
+          ]
+        },
+        {
+          effectId: "clockwork_knight_tribute_ss",
+          hoptGroup: "HOPT_CLOCKWORK_KNIGHT_REVIVE",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "TRIBUTE_SELF"
+            }
+          ],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M",
+              filter: {
+                race: "Machine"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "13117073",
+      name: "Barricadeborg Blocker",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1000,
+        linkRating: 2,
+        linkArrows: ["L", "B"],
+        isTuner: false
+      },
+      archetypes: [],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "barricadeborg_salvage",
+          hoptGroup: "HOPT_BARRICADEBORG",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_GENERIC_CARD",
+              amount: 1
+            }
+          ],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "GRAVEYARD",
+              to: "HAND",
+              filter: {
+                cardType: "SPELL"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "75147529",
+      name: "Sky Striker Ace - Zeke",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 2,
+        linkArrows: ["T", "B"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "zeke_on_summon_banish",
+          hoptGroup: "HOPT_ZEKE_SUMMON",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "BANISH",
+              target: "FIELD_TARGET"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "SPOT_REMOVAL",
+            removalType: "BANISH",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: []
+          }
+        }
+      ]
+    },
+    {
+      id: "63013339",
+      name: "Sky Striker Ace - Camellia",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 2,
+        linkArrows: ["TR", "BL"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "camellia_mill",
+          category: "IGNITION",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "MILL",
+              from: "DECK",
+              to: "GRAVEYARD",
+              filter: {
+                archetype: "Sky Striker"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "63288573",
+      name: "Sky Striker Ace - Kagari",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "FIRE",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 1,
+        linkArrows: ["TL"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "kagari_salvage",
+          hoptGroup: "HOPT_KAGARI_SALVAGE",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "EVENT_IS_NORMAL_OR_SPECIAL_SUMMONED"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "GRAVEYARD",
+              to: "HAND",
+              filter: {
+                archetype: "Sky Striker",
+                cardType: "SPELL"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "90673288",
+      name: "Sky Striker Ace - Shizuku",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WATER",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 1,
+        linkArrows: ["TR"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "shizuku_end_phase_search",
+          hoptGroup: "HOPT_SHIZUKU_SEARCH",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                archetype: "Sky Striker",
+                cardType: "SPELL"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "8491308",
+      name: "Sky Striker Ace - Hayate",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "WIND",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 1,
+        linkArrows: ["BL"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "hayate_battle_mill",
+          category: "TRIGGER",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "MILL",
+              from: "DECK",
+              to: "GRAVEYARD",
+              filter: {
+                archetype: "Sky Striker"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "25072579",
+      name: "Prototype Sky Striker Ace - Amatsu",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "DARK",
+        race: "Machine",
+        levelOrRank: 0,
+        atk: 1500,
+        linkRating: 1,
+        linkArrows: ["B"],
+        isTuner: false
+      },
+      archetypes: ["Sky Striker"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "amatsu_redirect_negate",
+          hoptGroup: "HOPT_AMATSU_REDIRECT",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "MONSTER_NEGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: []
+          }
+        }
+      ]
+    },
+    {
+      id: "27204311",
+      name: "Nibiru, the Primal Being",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "LIGHT",
+        race: "Rock",
+        levelOrRank: 11,
+        atk: 3000,
+        def: 600,
+        isTuner: false
+      },
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "nibiru_wipe",
+          hoptGroup: "HOPT_NIBIRU",
+          category: "QUICK",
+          activationLocation: ["HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            }
+          ],
+          interruptionProfile: {
+            layer: "HAND",
+            kind: "SPOT_REMOVAL",
+            removalType: "SEND_TO_GY",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      id: "10604644",
+      name: "Therion \"King\" Regulus",
+      cardType: "MONSTER",
+      monsterAttributes: {
+        attribute: "EARTH",
+        race: "Machine",
+        levelOrRank: 8,
+        atk: 2800,
+        def: 1600,
+        isTuner: false
+      },
+      archetypes: ["Therion"],
+      taxonomyRole: "TECH_DEFENSIVE",
+      effects: [
+        {
+          effectId: "regulus_ss_from_hand",
+          hoptGroup: "HOPT_REGULUS_SS",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M"
+            },
+            {
+              type: "ATTACH_MATERIAL"
+            }
+          ]
+        },
+        {
+          effectId: "regulus_omni_negate",
+          hoptGroup: "HOPT_REGULUS_NEGATE",
+          category: "QUICK",
+          activationLocation: ["FIELD_M"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "SEND_SELF_TO_GY"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          interruptionProfile: {
+            layer: "FIELD",
+            kind: "OMNI_NEGATE",
+            isTargeting: false,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["EVENLY_MATCHED"]
+          }
+        }
+      ]
+    },
+    {
+      id: "84797028",
+      name: "Clockwork Night",
+      cardType: "SPELL",
+      spellTrapType: "CONTINUOUS",
+      archetypes: [],
+      taxonomyRole: "TECH_BREAKER",
+      effects: [
+        {
+          effectId: "clockwork_night_gy_search",
+          hoptGroup: "HOPT_CLOCKWORK_NIGHT_SEARCH",
+          category: "IGNITION",
+          activationLocation: ["GRAVEYARD"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [
+            {
+              type: "BANISH_SELF_FROM_GY"
+            },
+            {
+              type: "DISCARD_GENERIC_CARD",
+              amount: 1
+            }
+          ],
+          resolution: [
+            {
+              type: "SEARCH",
+              from: "DECK",
+              to: "HAND",
+              filter: {
+                race: "Machine",
+                attribute: "EARTH"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "16066654",
+      name: "R.B. Operation Test",
+      cardType: "SPELL",
+      spellTrapType: "CONTINUOUS",
+      archetypes: ["R.B.", "Revol Bots"],
+      taxonomyRole: "EXTENDER",
+      effects: [
+        {
+          effectId: "operation_test_activate_revive",
+          hoptGroup: "HOPT_OPERATION_TEST_REVIVE",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "GRAVEYARD",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        },
+        {
+          effectId: "operation_test_bounce_ss",
+          hoptGroup: "HOPT_OPERATION_TEST_BOUNCE",
+          category: "IGNITION",
+          activationLocation: ["FIELD_S"],
+          spellSpeed: 1,
+          conditions: [],
+          costs: [],
+          resolution: [
+            {
+              type: "SPECIAL_SUMMON",
+              from: "HAND",
+              to: "FIELD_M",
+              filter: {
+                archetype: "R.B."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "24299458",
+      name: "Forbidden Droplet",
+      cardType: "SPELL",
+      spellTrapType: "QUICK_PLAY",
+      archetypes: ["Forbidden"],
+      taxonomyRole: "TECH_BREAKER",
+      effects: [
+        {
+          effectId: "forbidden_droplet_negate",
+          category: "QUICK",
+          activationLocation: ["HAND", "FIELD_S"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "OPPONENT_CONTROLS_MONSTER"
+            }
+          ],
+          costs: [
+            {
+              type: "DISCARD_GENERIC_CARD",
+              amount: 1
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "FIELD_TARGET"
+            }
+          ],
+          interruptionProfile: {
+            layer: "BACKROW",
+            kind: "MONSTER_NEGATE",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "RAIGEKI", "SUPER_POLY"]
+          }
+        }
+      ]
+    },
+    {
+      id: "14532163",
+      name: "Lightning Storm",
+      cardType: "SPELL",
+      spellTrapType: "NORMAL",
+      archetypes: ["Cyclone"],
+      taxonomyRole: "TECH_BREAKER",
+      effects: [
+        {
+          effectId: "lightning_storm_wipe",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "CONTROL_NO_MONSTERS"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "DESTROY",
+              target: "FIELD_TARGET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "25311006",
+      name: "Triple Tactics Talent",
+      cardType: "SPELL",
+      spellTrapType: "NORMAL",
+      archetypes: [],
+      taxonomyRole: "TECH_BREAKER",
+      effects: [
+        {
+          effectId: "ttt_draw",
+          category: "IGNITION",
+          activationLocation: ["HAND"],
+          spellSpeed: 1,
+          conditions: [
+            {
+              type: "OPPONENT_ACTIVATED_EFFECT"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "DRAW",
+              count: 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "10045474",
+      name: "Infinite Impermanence",
+      cardType: "TRAP",
+      spellTrapType: "NORMAL",
+      archetypes: [],
+      taxonomyRole: "TECH_HANDTRAP",
+      effects: [
+        {
+          effectId: "imperm_negate",
+          category: "QUICK",
+          activationLocation: ["FIELD_S", "HAND"],
+          spellSpeed: 2,
+          conditions: [
+            {
+              type: "OPPONENT_CONTROLS_MONSTER"
+            }
+          ],
+          costs: [],
+          resolution: [
+            {
+              type: "NEGATE_EFFECT",
+              target: "FIELD_TARGET"
+            }
+          ],
+          interruptionProfile: {
+            layer: "BACKROW",
+            kind: "MONSTER_NEGATE",
+            isTargeting: true,
+            spellSpeed: 2,
+            resilientAgainstWipes: ["DARK_RULER", "RAIGEKI", "SUPER_POLY"]
+          }
+        }
+      ]
+    },
+    {
+      id: "41420027",
+      name: "Solemn Judgment",
+      cardType: "TRAP",
+      spellTrapType: "COUNTER",
+      archetypes: ["Solemn"],
+      taxonomyRole: "TECH_DEFENSIVE",
+      effects: [
+        {
+          effectId: "solemn_judgment_negate",
+          category: "QUICK",
+          activationLocation: ["FIELD_S"],
+          spellSpeed: 3,
+          conditions: [
+            {
+              type: "CHAIN_LINK_EXISTS"
+            }
+          ],
+          costs: [
+            {
+              type: "PAY_LP"
+            }
+          ],
+          resolution: [
+            {
+              type: "NEGATE_ACTIVATION",
+              target: "PREVIOUS_CHAIN_LINK"
+            },
+            {
+              type: "DESTROY",
+              target: "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          interruptionProfile: {
+            layer: "BACKROW",
+            kind: "OMNI_NEGATE",
+            removalType: "DESTROY",
+            isTargeting: false,
+            spellSpeed: 3,
+            resilientAgainstWipes: ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    }
+  ]
+};
+
+// Validate against Zod schema
+console.log("Validating against ArchetypeDAGSchema...");
+const validated = validateArchetypeDAG(revolBotsDAG);
+console.log(`Validation SUCCESS! Archetype: ${validated.archetypeName}, Cards: ${validated.cards.length}`);
+
+// Write to revol_bots.json
+const outputPath = resolve("data/archetypes/revol_bots.json");
+writeFileSync(outputPath, JSON.stringify(revolBotsDAG, null, 2), "utf-8");
+console.log(`Saved validated archetype to: ${outputPath}`);
