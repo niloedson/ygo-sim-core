@@ -86,9 +86,9 @@ export function discoverLegalActions(
   }
 
   // 2. Spell / Trap Activations and Sets from Hand
-  const openSTZ: SpellTrapZoneId | undefined = (['S1', 'S2', 'S3', 'S4', 'S5'] as SpellTrapZoneId[]).find(
-    (z) => !pZones.spells[z]
-  );
+  const openSTZ: SpellTrapZoneId | undefined = (
+    ['S1', 'S2', 'S3', 'S4', 'S5'] as SpellTrapZoneId[]
+  ).find((z) => !pZones.spells[z]);
 
   for (const card of pZones.hand) {
     const cardDef = registry.getCardById(card.passcode) ?? registry.getCardByName(card.name);
@@ -140,9 +140,13 @@ export function discoverLegalActions(
   }
 
   // 3. Field Monster Ignition Activations
-  for (const [zoneKey, monster] of Object.entries(pZones.monsters) as [MainMonsterZoneId, CardInstance | undefined][]) {
+  for (const [zoneKey, monster] of Object.entries(pZones.monsters) as [
+    MainMonsterZoneId,
+    CardInstance | undefined
+  ][]) {
     if (monster && !monster.isNegated) {
-      const cardDef = registry.getCardById(monster.passcode) ?? registry.getCardByName(monster.name);
+      const cardDef =
+        registry.getCardById(monster.passcode) ?? registry.getCardByName(monster.name);
       cardDef?.effects?.forEach((eff, idx) => {
         if (eff.category === 'IGNITION' && eff.activationLocation.includes('FIELD_M')) {
           if (!eff.hoptGroup || !state.registers.hoptActivated.has(eff.hoptGroup)) {
@@ -273,7 +277,9 @@ export function applyAction(
     }
 
     case 'ACTIVATE_HAND': {
-      const cardDef = registry.getCardById(action.sourceCard.passcode) ?? registry.getCardByName(action.sourceCard.name);
+      const cardDef =
+        registry.getCardById(action.sourceCard.passcode) ??
+        registry.getCardByName(action.sourceCard.name);
       const effect = cardDef?.effects[action.effectIndex ?? 0];
 
       // Remove card from hand
@@ -323,7 +329,9 @@ export function applyAction(
     }
 
     case 'ACTIVATE_FIELD': {
-      const cardDef = registry.getCardById(action.sourceCard.passcode) ?? registry.getCardByName(action.sourceCard.name);
+      const cardDef =
+        registry.getCardById(action.sourceCard.passcode) ??
+        registry.getCardByName(action.sourceCard.name);
       const effect = cardDef?.effects[action.effectIndex ?? 0];
 
       if (effect?.hoptGroup) {
@@ -355,7 +363,10 @@ export function applyAction(
       const materials: CardInstance[] = [];
       if (action.materialsUsed) {
         for (const mat of action.materialsUsed) {
-          for (const [z, m] of Object.entries(pZones.monsters) as [MainMonsterZoneId, CardInstance | undefined][]) {
+          for (const [z, m] of Object.entries(pZones.monsters) as [
+            MainMonsterZoneId,
+            CardInstance | undefined
+          ][]) {
             if (m && m.instanceId === mat.instanceId) {
               delete pZones.monsters[z];
               materials.push(cloneCardInstance(m));
@@ -366,7 +377,9 @@ export function applyAction(
       }
 
       // Remove Xyz monster from Extra Deck
-      const edIdx = pZones.extraDeck.findIndex((c) => c.instanceId === action.sourceCard.instanceId);
+      const edIdx = pZones.extraDeck.findIndex(
+        (c) => c.instanceId === action.sourceCard.instanceId
+      );
       if (edIdx !== -1) {
         const [xyzCard] = pZones.extraDeck.splice(edIdx, 1);
         if (xyzCard) {
@@ -387,13 +400,17 @@ export function applyAction(
     }
 
     case 'LINK_SUMMON': {
-      const targetZone = action.targetZone || findAvailableEMZ(next, player) || findAvailableMMZ(next, player);
+      const targetZone =
+        action.targetZone || findAvailableEMZ(next, player) || findAvailableMMZ(next, player);
       if (!targetZone) throw new Error('No available zone for Link Summon');
 
       // Send materials to GY
       if (action.materialsUsed) {
         for (const mat of action.materialsUsed) {
-          for (const [z, m] of Object.entries(pZones.monsters) as [MainMonsterZoneId, CardInstance | undefined][]) {
+          for (const [z, m] of Object.entries(pZones.monsters) as [
+            MainMonsterZoneId,
+            CardInstance | undefined
+          ][]) {
             if (m && m.instanceId === mat.instanceId) {
               delete pZones.monsters[z];
               m.turnSentToGY = next.turn;
@@ -406,7 +423,9 @@ export function applyAction(
       }
 
       // Place Link monster from Extra Deck
-      const edIdx = pZones.extraDeck.findIndex((c) => c.instanceId === action.sourceCard.instanceId);
+      const edIdx = pZones.extraDeck.findIndex(
+        (c) => c.instanceId === action.sourceCard.instanceId
+      );
       if (edIdx !== -1) {
         const [linkCard] = pZones.extraDeck.splice(edIdx, 1);
         if (linkCard) {

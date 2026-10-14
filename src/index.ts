@@ -9,3 +9,4 @@ export * from './types/state.js';
 export * from './notation/index.js';
 export * from './engine/index.js';
 export * from './dsl/index.js';
+export * from './search/index.js';

@@ -100,7 +100,9 @@ export function simulateHands(
   const mainDeckTemplate = [...parsed.mainDeck];
 
   if (mainDeckTemplate.length < handSize) {
-    throw new Error(`Main deck size (${mainDeckTemplate.length}) is smaller than hand size (${handSize})`);
+    throw new Error(
+      `Main deck size (${mainDeckTemplate.length}) is smaller than hand size (${handSize})`
+    );
   }
 
   // Pre-classify starters in the deck for maximum throughput
