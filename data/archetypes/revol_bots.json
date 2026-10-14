@@ -1,0 +1,1360 @@
+{
+  "archetypeName": "RB__Revol_Bots_",
+  "version": "1.0.0",
+  "standardStarters": [
+    "5109321",
+    "52340444",
+    "20357457",
+    "78710386",
+    "73628505",
+    "63166095",
+    "84797028",
+    "16066654"
+  ],
+  "primaryExtenders": [
+    "44573911",
+    "33438265",
+    "6043161",
+    "79436874",
+    "37351133"
+  ],
+  "insulationTargets": [
+    "24224830",
+    "32216688",
+    "6821579",
+    "80071619",
+    "41739381",
+    "13117073",
+    "75147529",
+    "63013339",
+    "63288573",
+    "90673288",
+    "8491308",
+    "25072579",
+    "41420027"
+  ],
+  "cards": [
+    {
+      "id": "5109321",
+      "name": "R.B. Stage Landing",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_5109321",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "52340444",
+      "name": "Sky Striker Mecha - Hornet Drones",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_52340444",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20357457",
+      "name": "Pillar of the Future - Cyanos",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Machine",
+        "levelOrRank": 1,
+        "atk": 500,
+        "def": 1500,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker"
+      ],
+      "taxonomyRole": "STARTER_NS",
+      "effects": [
+        {
+          "effectId": "eff_20357457",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "44573911",
+      "name": "R.B. Ga10 Pile Bunker",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 8,
+        "atk": 1500,
+        "def": 1500,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "eff_44573911",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "33438265",
+      "name": "R.B. Ga10 Cutter",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 4,
+        "atk": 700,
+        "def": 700,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "eff_33438265",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6043161",
+      "name": "R.B. Ga10 Driller",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 3,
+        "atk": 500,
+        "def": 500,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "eff_6043161",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "78710386",
+      "name": "R.B. Funk Dock",
+      "cardType": "SPELL",
+      "spellTrapType": "FIELD",
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_78710386",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "73628505",
+      "name": "Terraforming",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_73628505",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "63166095",
+      "name": "Sky Striker Mobilize - Engage!",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_63166095",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "79436874",
+      "name": "R.B. VALCan Rocket",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Machine",
+        "levelOrRank": 5,
+        "atk": 1000,
+        "def": 1000,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "eff_79436874",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "37351133",
+      "name": "Sky Striker Ace - Roze",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Warrior",
+        "levelOrRank": 4,
+        "atk": 1500,
+        "def": 1500,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "taxonomyRole": "EXTENDER",
+      "effects": [
+        {
+          "effectId": "eff_37351133",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "43450363",
+      "name": "R.B. Last Stand",
+      "cardType": "TRAP",
+      "spellTrapType": "NORMAL",
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "ENGINE_BRICK",
+      "effects": [
+        {
+          "effectId": "eff_43450363",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "14558127",
+      "name": "Ash Blossom & Joyous Spring",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Zombie",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_14558127",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "73642296",
+      "name": "Ghost Belle & Haunted Mansion",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Zombie",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_73642296",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "59438930",
+      "name": "Ghost Ogre & Snow Rabbit",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Psychic",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_59438930",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "94145021",
+      "name": "Droll & Lock Bird",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Spellcaster",
+        "levelOrRank": 1,
+        "atk": 0,
+        "def": 0,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_94145021",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "42141493",
+      "name": "Mulcharmy Fuwalos",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Winged Beast",
+        "levelOrRank": 4,
+        "atk": 100,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Mulcharmy"
+      ],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_42141493",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "84192580",
+      "name": "Mulcharmy Purulia",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WATER",
+        "race": "Aqua",
+        "levelOrRank": 4,
+        "atk": 100,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Mulcharmy"
+      ],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_84192580",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "81794107",
+      "name": "R.B. Lambda Cannon",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 6,
+        "atk": 1200,
+        "def": 1200,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "effects": [
+        {
+          "effectId": "eff_81794107",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "17188206",
+      "name": "R.B. Lambda Blade",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 7,
+        "atk": 1400,
+        "def": 1400,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "effects": [
+        {
+          "effectId": "eff_17188206",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "79859067",
+      "name": "R.B. Next Phase",
+      "cardType": "TRAP",
+      "spellTrapType": "COUNTER",
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "ENGINE_BRICK",
+      "effects": [
+        {
+          "effectId": "eff_79859067",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "24224830",
+      "name": "Called by the Grave",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "eff_24224830",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "32216688",
+      "name": "R.B. The Brute Blues",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "effects": [
+        {
+          "effectId": "eff_32216688",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6821579",
+      "name": "R.B. VALCan Booster",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "effects": [
+        {
+          "effectId": "eff_6821579",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "80071619",
+      "name": "R.B. Shepherd's Crook",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "effects": [
+        {
+          "effectId": "eff_80071619",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41739381",
+      "name": "Clockwork Knight",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "effects": [
+        {
+          "effectId": "eff_41739381",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13117073",
+      "name": "Barricadeborg Blocker",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1000,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "effects": [
+        {
+          "effectId": "eff_13117073",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "75147529",
+      "name": "Sky Striker Ace - Zeke",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_75147529",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "63013339",
+      "name": "Sky Striker Ace - Camellia",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_63013339",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "63288573",
+      "name": "Sky Striker Ace - Kagari",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_63288573",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "90673288",
+      "name": "Sky Striker Ace - Shizuku",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WATER",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_90673288",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8491308",
+      "name": "Sky Striker Ace - Hayate",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_8491308",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "25072579",
+      "name": "Prototype Sky Striker Ace - Amatsu",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "DARK",
+        "race": "Machine",
+        "levelOrRank": 0,
+        "atk": 1500,
+        "linkRating": 2,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Sky Striker",
+        "Sky Striker"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_25072579",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "27204311",
+      "name": "Nibiru, the Primal Being",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Rock",
+        "levelOrRank": 11,
+        "atk": 3000,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_27204311",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10604644",
+      "name": "Therion \"King\" Regulus",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Machine",
+        "levelOrRank": 8,
+        "atk": 2800,
+        "def": 1600,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Therion"
+      ],
+      "effects": [
+        {
+          "effectId": "eff_10604644",
+          "category": "IGNITION",
+          "activationLocation": [
+            "FIELD_M"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "84797028",
+      "name": "Clockwork Night",
+      "cardType": "SPELL",
+      "spellTrapType": "CONTINUOUS",
+      "archetypes": [],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_84797028",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "16066654",
+      "name": "R.B. Operation Test",
+      "cardType": "SPELL",
+      "spellTrapType": "CONTINUOUS",
+      "archetypes": [
+        "R.B.",
+        "Revol Bots",
+        "R.B."
+      ],
+      "taxonomyRole": "STARTER_SS",
+      "effects": [
+        {
+          "effectId": "eff_16066654",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SEARCH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "24299458",
+      "name": "Forbidden Droplet",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [
+        "Forbidden"
+      ],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "eff_24299458",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "14532163",
+      "name": "Lightning Storm",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [
+        "Cyclone"
+      ],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "eff_14532163",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "25311006",
+      "name": "Triple Tactics Talent",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "eff_25311006",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10045474",
+      "name": "Infinite Impermanence",
+      "cardType": "TRAP",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "eff_10045474",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "41420027",
+      "name": "Solemn Judgment",
+      "cardType": "TRAP",
+      "spellTrapType": "COUNTER",
+      "archetypes": [
+        "Solemn"
+      ],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "eff_41420027",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

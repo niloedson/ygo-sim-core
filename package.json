@@ -15,6 +15,7 @@
     "start": "node dist/mcp/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "scaffold:archetype": "node scripts/scaffold-archetype.mjs",
     "lint": "eslint src/ test/ bin/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"bin/**/*.ts\""
   },
