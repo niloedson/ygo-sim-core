@@ -147,9 +147,21 @@ for (const id of allUniqueIds) {
   let monsterAttributes = undefined;
   if (cardType === 'MONSTER') {
     let linkRating = undefined;
+    let linkArrows = undefined;
     if (row.type.includes('Link')) {
-      linkRating = row.level || 2;
-      insulationTargets.push(String(row.id));
+      const markers = row.linkmarkers ? row.linkmarkers.split(',').map((s) => s.trim()) : [];
+      linkRating = markers.length || row.level || 1;
+      const markerMap = {
+        'Top': 'T',
+        'Bottom': 'B',
+        'Left': 'L',
+        'Right': 'R',
+        'Top-Left': 'TL',
+        'Top-Right': 'TR',
+        'Bottom-Left': 'BL',
+        'Bottom-Right': 'BR'
+      };
+      linkArrows = markers.map((m) => markerMap[m]).filter(Boolean);
     }
     monsterAttributes = {
       attribute: row.attribute || 'DARK',
@@ -158,6 +170,7 @@ for (const id of allUniqueIds) {
       atk: row.atk ?? 0,
       def: linkRating ? undefined : (row.def ?? 0),
       linkRating,
+      linkArrows,
       isTuner: row.type.includes('Tuner')
     };
   }
@@ -171,10 +184,11 @@ for (const id of allUniqueIds) {
     else spellTrapType = 'NORMAL';
   }
 
-  const archetypes = [];
-  if (row.archetype) archetypes.push(row.archetype);
-  if (row.name.startsWith('R.B.')) archetypes.push('Revol Bots', 'R.B.');
-  if (row.name.includes('Sky Striker')) archetypes.push('Sky Striker');
+  const rawArchetypes = [];
+  if (row.archetype) rawArchetypes.push(row.archetype);
+  if (row.name.startsWith('R.B.')) rawArchetypes.push('Revol Bots', 'R.B.');
+  if (row.name.includes('Sky Striker')) rawArchetypes.push('Sky Striker');
+  const archetypes = [...new Set(rawArchetypes)];
 
   cards.push({
     id: String(row.id),
