@@ -58,7 +58,8 @@
               ],
               "to": "FIELD_M",
               "filter": {
-                "archetype": "R.B."
+                "archetype": "R.B.",
+                "cardType": "MONSTER"
               }
             }
           ]

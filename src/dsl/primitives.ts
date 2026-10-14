@@ -14,6 +14,7 @@ import {
 } from '../types/state.js';
 import type { CostOperation, ResolutionOperation, EffectDefinition } from '../types/card-dsl.js';
 import type { TimingState } from '../engine/fastEffectEngine.js';
+import type { CardRegistry } from './archetypeLoader.js';
 
 /**
  * Filter matching helper for search/special summon operations.
@@ -21,7 +22,7 @@ import type { TimingState } from '../engine/fastEffectEngine.js';
 export function matchesCardFilter(
   card: CardInstance,
   filter?: ResolutionOperation['filter'],
-  archetypesLookup?: (passcode: string) => string[]
+  registryOrLookup?: CardRegistry | ((passcode: string) => string[] | undefined)
 ): boolean {
   if (!filter) return true;
 
@@ -40,8 +41,19 @@ export function matchesCardFilter(
     if (card.levelOrRank > filter.levelMax) return false;
   }
 
-  if (filter.archetype && archetypesLookup) {
-    const cardArchetypes = archetypesLookup(card.passcode);
+  if (filter.archetype) {
+    let cardArchetypes: string[] = [];
+    if (typeof registryOrLookup === 'function') {
+      cardArchetypes = registryOrLookup(card.passcode) ?? [];
+    } else if (
+      registryOrLookup &&
+      typeof (registryOrLookup as CardRegistry).getCardById === 'function'
+    ) {
+      const def =
+        (registryOrLookup as CardRegistry).getCardById(card.passcode) ??
+        (registryOrLookup as CardRegistry).getCardByName(card.name);
+      cardArchetypes = def?.archetypes ?? [];
+    }
     if (!cardArchetypes.includes(filter.archetype)) return false;
   }
 

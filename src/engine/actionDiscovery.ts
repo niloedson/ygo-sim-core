@@ -130,8 +130,14 @@ export function discoverLegalActions(
                     else if (loc === 'EXTRA_DECK') sourceList = pZones.extraDeck;
                     else if (loc === 'GRAVEYARD') sourceList = pZones.graveyard;
 
+                    const isSS = targetedRes.type === 'SPECIAL_SUMMON';
+
                     for (const candidate of sourceList) {
-                      if (matchesCardFilter(candidate, targetedRes.filter)) {
+                      if (isSS && candidate.cardType !== 'MONSTER') {
+                        continue;
+                      }
+
+                      if (matchesCardFilter(candidate, targetedRes.filter, registry)) {
                         // Check ATK restriction for R.B. Stage Landing: Machine monsters with <= 1500 original ATK
                         if (card.name === 'R.B. Stage Landing' && loc === 'EXTRA_DECK') {
                           const candidateDef =

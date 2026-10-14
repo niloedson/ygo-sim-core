@@ -4,7 +4,7 @@
  */
 
 import xxhashjs from 'xxhashjs';
-import { GameState, YBNString, CardInstance, PlayerZones } from '../types/state.js';
+import { GameState, YBNString, CardInstance, PlayerZones, SpellTrapZoneId } from '../types/state.js';
 import { serializeToYBN } from '../notation/ybnSerializer.js';
 
 // Default 32-bit prime seed for XXH64
@@ -64,9 +64,24 @@ export function canonicalizePlayerZones(zones: PlayerZones): PlayerZones {
     }
   }
 
+  const canonicalSpells: Partial<Record<SpellTrapZoneId, CardInstance>> = {};
+  const activeSpellCards = (
+    Object.entries(zones.spells) as [SpellTrapZoneId, CardInstance | undefined][]
+  )
+    .filter(([, c]) => c !== undefined)
+    .map(([, c]) => c!)
+    .sort(compareCards);
+
+  const stKeys: SpellTrapZoneId[] = ['S1', 'S2', 'S3', 'S4', 'S5'];
+  activeSpellCards.forEach((card, idx) => {
+    if (idx < stKeys.length) {
+      canonicalSpells[stKeys[idx]!] = card;
+    }
+  });
+
   return {
     monsters: canonicalMonsters,
-    spells: zones.spells,
+    spells: canonicalSpells,
     fieldSpell: zones.fieldSpell,
     extraMonsters: canonicalExtraMonsters,
     hand: zones.hand.length > 1 ? [...zones.hand].sort(compareCards) : zones.hand,
