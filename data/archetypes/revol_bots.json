@@ -52,6 +52,10 @@
             {
               "type": "SPECIAL_SUMMON",
               "from": "DECK",
+              "fromLocations": [
+                "DECK",
+                "EXTRA_DECK"
+              ],
               "to": "FIELD_M",
               "filter": {
                 "archetype": "R.B."
@@ -640,6 +644,11 @@
             {
               "type": "SPECIAL_SUMMON",
               "from": "DECK",
+              "fromLocations": [
+                "DECK",
+                "EXTRA_DECK",
+                "GRAVEYARD"
+              ],
               "to": "FIELD_M",
               "filter": {
                 "archetype": "R.B."

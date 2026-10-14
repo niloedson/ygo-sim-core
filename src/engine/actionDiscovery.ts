@@ -33,6 +33,12 @@ export type ActionVerb =
   | 'XYZ_SUMMON'
   | 'ADVANCE_PHASE';
 
+export interface ActionTargetSelection {
+  passcode: string;
+  name: string;
+  fromLocation: 'DECK' | 'EXTRA_DECK' | 'GRAVEYARD' | 'HAND';
+}
+
 export interface DiscoveredAction {
   id: string;
   verb: ActionVerb;
@@ -42,6 +48,7 @@ export interface DiscoveredAction {
   targetZone?: MainMonsterZoneId | ExtraMonsterZoneId | SpellTrapZoneId | undefined;
   materialsUsed?: CardInstance[] | undefined;
   effectIndex?: number | undefined;
+  targetSelection?: ActionTargetSelection | undefined;
 }
 
 /**
@@ -107,14 +114,87 @@ export function discoverLegalActions(
             if (!isReactive) {
               // Check HOPT
               if (!eff.hoptGroup || !state.registers.hoptActivated.has(eff.hoptGroup)) {
-                actions.push({
-                  id: `ACT_H_${card.instanceId}_${idx}`,
-                  verb: 'ACTIVATE_HAND',
-                  description: `Activate ${card.name} from hand`,
-                  ygnNotation: `A(H)[${card.instanceId}:${card.name}]`,
-                  sourceCard: card,
-                  effectIndex: idx
-                });
+                // Check if effect defines discrete search or special summon target choices
+                const targetedRes = eff.resolution.find(
+                  (r) => r.type === 'SEARCH' || r.type === 'SPECIAL_SUMMON'
+                );
+
+                if (targetedRes) {
+                  const targetLocations = targetedRes.fromLocations ?? (targetedRes.from ? [targetedRes.from] : ['DECK']);
+                  const uniqueCandidates: { card: CardInstance; loc: 'DECK' | 'EXTRA_DECK' | 'GRAVEYARD' }[] = [];
+                  const seenPasscodes = new Set<string>();
+
+                  for (const loc of targetLocations) {
+                    let sourceList: CardInstance[] = [];
+                    if (loc === 'DECK') sourceList = pZones.deck;
+                    else if (loc === 'EXTRA_DECK') sourceList = pZones.extraDeck;
+                    else if (loc === 'GRAVEYARD') sourceList = pZones.graveyard;
+
+                    for (const candidate of sourceList) {
+                      if (matchesCardFilter(candidate, targetedRes.filter)) {
+                        // Check ATK restriction for R.B. Stage Landing: Machine monsters with <= 1500 original ATK
+                        if (card.name === 'R.B. Stage Landing' && loc === 'EXTRA_DECK') {
+                          const candidateDef =
+                            registry.getCardById(candidate.passcode) ??
+                            registry.getCardByName(candidate.name);
+                          const atk = candidateDef?.monsterAttributes?.atk ?? 0;
+                          const race = candidateDef?.monsterAttributes?.race;
+                          if (atk > 1500 || race !== 'Machine') continue;
+                        }
+
+                        // Also Stage Landing requires a different name than cards currently controlled
+                        if (card.name === 'R.B. Stage Landing') {
+                          const controlledNames = new Set(
+                            Object.values(pZones.monsters)
+                              .concat(Object.values(pZones.extraMonsters))
+                              .filter((m): m is CardInstance => m !== undefined)
+                              .map((m) => m.name)
+                          );
+                          if (controlledNames.has(candidate.name)) continue;
+                        }
+
+                        if (!seenPasscodes.has(candidate.passcode)) {
+                          seenPasscodes.add(candidate.passcode);
+                          uniqueCandidates.push({
+                            card: candidate,
+                            loc: loc as 'DECK' | 'EXTRA_DECK' | 'GRAVEYARD'
+                          });
+                        }
+                      }
+                    }
+                  }
+
+                  if (uniqueCandidates.length > 0) {
+                    for (const tgt of uniqueCandidates) {
+                      const verbStr = targetedRes.type === 'SEARCH' ? 'SEARCH' : 'SS';
+                      actions.push({
+                        id: `ACT_H_${card.instanceId}_eff${idx}_to_${tgt.card.passcode}`,
+                        verb: 'ACTIVATE_HAND',
+                        description: `Activate ${card.name} -> ${targetedRes.type === 'SEARCH' ? 'Add' : 'Special Summon'} ${tgt.card.name} from ${tgt.loc}`,
+                        ygnNotation: `A(H)[${card.instanceId}:${card.name}]>${verbStr}(${tgt.loc}:${tgt.card.name})`,
+                        sourceCard: card,
+                        effectIndex: idx,
+                        targetSelection: {
+                          passcode: tgt.card.passcode,
+                          name: tgt.card.name,
+                          fromLocation: tgt.loc
+                        }
+                      });
+                    }
+                  } else {
+                    // No valid target exists for this search/summon effect
+                  }
+                } else {
+                  // Standard hand activation without target choice
+                  actions.push({
+                    id: `ACT_H_${card.instanceId}_${idx}`,
+                    verb: 'ACTIVATE_HAND',
+                    description: `Activate ${card.name} from hand`,
+                    ygnNotation: `A(H)[${card.instanceId}:${card.name}]`,
+                    sourceCard: card,
+                    effectIndex: idx
+                  });
+                }
               }
             }
           }
@@ -311,17 +391,72 @@ export function applyAction(
         }
         for (const res of effect.resolution) {
           if (res.type === 'SEARCH') {
-            const searchResult = applySearch(next, player, res.filter);
-            next = searchResult.nextState;
+            if (action.targetSelection) {
+              const targetCode = action.targetSelection.passcode;
+              const sourceLoc = action.targetSelection.fromLocation;
+              let targetIdx = -1;
+              if (sourceLoc === 'GRAVEYARD') {
+                targetIdx = pZones.graveyard.findIndex((c) => c.passcode === targetCode);
+                if (targetIdx !== -1) {
+                  const [found] = pZones.graveyard.splice(targetIdx, 1);
+                  if (found) pZones.hand.push(found);
+                }
+              } else {
+                targetIdx = pZones.deck.findIndex((c) => c.passcode === targetCode);
+                if (targetIdx !== -1) {
+                  const [found] = pZones.deck.splice(targetIdx, 1);
+                  if (found) pZones.hand.push(found);
+                }
+              }
+            } else {
+              const searchResult = applySearch(next, player, res.filter);
+              next = searchResult.nextState;
+            }
           } else if (res.type === 'SPECIAL_SUMMON') {
-            const count = res.count ?? 1;
-            for (let i = 0; i < count; i++) {
-              const mmz = findAvailableMMZ(next, player);
-              if (mmz && pZones.deck.length > 0) {
-                const deckIdx = pZones.deck.findIndex((c) => matchesCardFilter(c, res.filter));
+            if (action.targetSelection) {
+              const targetCode = action.targetSelection.passcode;
+              const sourceLoc = action.targetSelection.fromLocation;
+              if (sourceLoc === 'EXTRA_DECK') {
+                const edIdx = pZones.extraDeck.findIndex((c) => c.passcode === targetCode);
+                if (edIdx !== -1) {
+                  const cardToSS = pZones.extraDeck[edIdx]!;
+                  const openEMZ = findAvailableEMZ(next, player);
+                  const openMMZ = findAvailableMMZ(next, player);
+                  const targetZone = openEMZ ?? openMMZ;
+                  if (targetZone) {
+                    next = applySpecialSummon(next, player, cardToSS, targetZone, 'atk', 'EXTRA_DECK');
+                  }
+                }
+              } else if (sourceLoc === 'GRAVEYARD') {
+                const gyIdx = pZones.graveyard.findIndex((c) => c.passcode === targetCode);
+                if (gyIdx !== -1) {
+                  const cardToSS = pZones.graveyard[gyIdx]!;
+                  const mmz = findAvailableMMZ(next, player);
+                  if (mmz) {
+                    next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'GRAVEYARD');
+                  }
+                }
+              } else {
+                // From DECK
+                const deckIdx = pZones.deck.findIndex((c) => c.passcode === targetCode);
                 if (deckIdx !== -1) {
                   const cardToSS = pZones.deck[deckIdx]!;
-                  next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'DECK');
+                  const mmz = findAvailableMMZ(next, player);
+                  if (mmz) {
+                    next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'DECK');
+                  }
+                }
+              }
+            } else {
+              const count = res.count ?? 1;
+              for (let i = 0; i < count; i++) {
+                const mmz = findAvailableMMZ(next, player);
+                if (mmz && pZones.deck.length > 0) {
+                  const deckIdx = pZones.deck.findIndex((c) => matchesCardFilter(c, res.filter));
+                  if (deckIdx !== -1) {
+                    const cardToSS = pZones.deck[deckIdx]!;
+                    next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'DECK');
+                  }
                 }
               }
             }

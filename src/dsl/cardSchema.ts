@@ -134,6 +134,7 @@ export const ResolutionOperationSchema = z.object({
     'SET_FROM_DECK'
   ]),
   from: ZoneLocationSchema.optional(),
+  fromLocations: z.array(ZoneLocationSchema).optional(),
   to: ZoneLocationSchema.optional(),
   count: z.number().int().positive().optional(),
   filter: z

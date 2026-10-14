@@ -88,6 +88,7 @@ export interface ResolutionOperation {
     | 'BOUNCE'
     | 'SET_FROM_DECK';
   from?: ZoneLocation;
+  fromLocations?: ZoneLocation[];
   to?: ZoneLocation;
   count?: number;
   filter?: {
