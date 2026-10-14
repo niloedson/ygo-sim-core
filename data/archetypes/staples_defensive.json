@@ -1,0 +1,114 @@
+{
+  "archetypeName": "Staples_Defensive",
+  "version": "1.0.0",
+  "standardStarters": [],
+  "primaryExtenders": [],
+  "insulationTargets": [
+    "24224830",
+    "41420027"
+  ],
+  "cards": [
+    {
+      "id": "24224830",
+      "name": "Called by the Grave",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "called_by_grave_banish",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND",
+            "FIELD_S"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "BANISH",
+              "from": "GRAVEYARD",
+              "to": "BANISHED"
+            },
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "MONSTER_NEGATE",
+            "removalType": "BANISH",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "41420027",
+      "name": "Solemn Judgment",
+      "cardType": "TRAP",
+      "spellTrapType": "COUNTER",
+      "archetypes": [
+        "Solemn"
+      ],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "solemn_judgment_negate",
+          "category": "QUICK",
+          "activationLocation": [
+            "FIELD_S"
+          ],
+          "spellSpeed": 3,
+          "conditions": [
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "PAY_LP"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "NEGATE_ACTIVATION",
+              "target": "PREVIOUS_CHAIN_LINK"
+            },
+            {
+              "type": "DESTROY",
+              "target": "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "OMNI_NEGATE",
+            "removalType": "DESTROY",
+            "isTargeting": false,
+            "spellSpeed": 3,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

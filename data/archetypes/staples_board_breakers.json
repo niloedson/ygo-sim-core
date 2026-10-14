@@ -1,0 +1,120 @@
+{
+  "archetypeName": "Staples_Board_Breakers",
+  "version": "1.0.0",
+  "standardStarters": [],
+  "primaryExtenders": [],
+  "insulationTargets": [],
+  "cards": [
+    {
+      "id": "24299458",
+      "name": "Forbidden Droplet",
+      "cardType": "SPELL",
+      "spellTrapType": "QUICK_PLAY",
+      "archetypes": [
+        "Forbidden"
+      ],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "forbidden_droplet_negate",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND",
+            "FIELD_S"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "OPPONENT_CONTROLS_MONSTER"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_GENERIC_CARD",
+              "amount": 1
+            }
+          ],
+          "resolution": [
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "FIELD_TARGET"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "RAIGEKI",
+              "SUPER_POLY"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "14532163",
+      "name": "Lightning Storm",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [
+        "Cyclone"
+      ],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "lightning_storm_wipe",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [
+            {
+              "type": "CONTROL_NO_MONSTERS"
+            }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "DESTROY",
+              "target": "FIELD_TARGET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "25311006",
+      "name": "Triple Tactics Talent",
+      "cardType": "SPELL",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "TECH_BREAKER",
+      "effects": [
+        {
+          "effectId": "ttt_draw",
+          "category": "IGNITION",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 1,
+          "conditions": [
+            {
+              "type": "OPPONENT_ACTIVATED_EFFECT"
+            }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "DRAW",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

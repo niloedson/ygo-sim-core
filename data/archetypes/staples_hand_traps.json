@@ -1,0 +1,436 @@
+{
+  "archetypeName": "Staples_Hand_Traps",
+  "version": "1.0.0",
+  "standardStarters": [],
+  "primaryExtenders": [],
+  "insulationTargets": [],
+  "cards": [
+    {
+      "id": "14558127",
+      "name": "Ash Blossom & Joyous Spring",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "FIRE",
+        "race": "Zombie",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "ash_blossom_negate",
+          "hoptGroup": "HOPT_ASH_BLOSSOM",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              "type": "EFFECT_INCLUDES_DECK_SEARCH_OR_MILL_OR_SS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "73642296",
+      "name": "Ghost Belle & Haunted Mansion",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "EARTH",
+        "race": "Zombie",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "ghost_belle_negate",
+          "hoptGroup": "HOPT_GHOST_BELLE",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "NEGATE_ACTIVATION",
+              "target": "PREVIOUS_CHAIN_LINK"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "59438930",
+      "name": "Ghost Ogre & Snow Rabbit",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Psychic",
+        "levelOrRank": 3,
+        "atk": 0,
+        "def": 1800,
+        "isTuner": true
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "ghost_ogre_destroy",
+          "hoptGroup": "HOPT_GHOST_OGRE",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND",
+            "FIELD_M"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "OPPONENT_ACTIVATED_EFFECT"
+            },
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "DESTROY",
+              "target": "PREVIOUS_CHAIN_LINK_CARD"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "SPOT_REMOVAL",
+            "removalType": "DESTROY",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "94145021",
+      "name": "Droll & Lock Bird",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Spellcaster",
+        "levelOrRank": 1,
+        "atk": 0,
+        "def": 0,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "droll_lock_activate",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "FLOODGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "42141493",
+      "name": "Mulcharmy Fuwalos",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WIND",
+        "race": "Winged Beast",
+        "levelOrRank": 4,
+        "atk": 100,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Mulcharmy"
+      ],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "fuwalos_activate",
+          "hoptGroup": "HOPT_MULCHARMY",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "CONTROL_NO_MONSTERS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "DRAW",
+              "count": 1
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "FLOODGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "84192580",
+      "name": "Mulcharmy Purulia",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WATER",
+        "race": "Aqua",
+        "levelOrRank": 4,
+        "atk": 100,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [
+        "Mulcharmy"
+      ],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "purulia_activate",
+          "hoptGroup": "HOPT_MULCHARMY",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "CONTROL_NO_MONSTERS"
+            }
+          ],
+          "costs": [
+            {
+              "type": "DISCARD_THIS_CARD"
+            }
+          ],
+          "resolution": [
+            {
+              "type": "DRAW",
+              "count": 1
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "FLOODGATE",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "27204311",
+      "name": "Nibiru, the Primal Being",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Rock",
+        "levelOrRank": 11,
+        "atk": 3000,
+        "def": 600,
+        "isTuner": false
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "nibiru_wipe",
+          "hoptGroup": "HOPT_NIBIRU",
+          "category": "QUICK",
+          "activationLocation": [
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "CHAIN_LINK_EXISTS"
+            }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "SPECIAL_SUMMON",
+              "from": "HAND",
+              "to": "FIELD_M"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "SPOT_REMOVAL",
+            "removalType": "SEND_TO_GY",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "EVENLY_MATCHED",
+              "SUPER_POLY",
+              "RAIGEKI"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "10045474",
+      "name": "Infinite Impermanence",
+      "cardType": "TRAP",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "imperm_negate",
+          "category": "QUICK",
+          "activationLocation": [
+            "FIELD_S",
+            "HAND"
+          ],
+          "spellSpeed": 2,
+          "conditions": [
+            {
+              "type": "OPPONENT_CONTROLS_MONSTER"
+            }
+          ],
+          "costs": [],
+          "resolution": [
+            {
+              "type": "NEGATE_EFFECT",
+              "target": "FIELD_TARGET"
+            }
+          ],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": [
+              "DARK_RULER",
+              "RAIGEKI",
+              "SUPER_POLY"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
