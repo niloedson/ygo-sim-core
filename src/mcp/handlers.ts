@@ -22,6 +22,8 @@ import { createInitialGameState } from '../types/state.js';
 import { scoreGameState, scoreYBN } from '../evaluator/boardScorer.js';
 import { auditInsulation } from '../engine/insulationEvaluator.js';
 import { evaluateHandtrapResilience, HandTrapThreatName } from '../engine/interruptionInjector.js';
+import { generateComboTreeMarkdownReport, saveComboTreeMarkdownReport } from '../notation/markdownTreeReporter.js';
+import { Logcat } from '../logging/logcat.js';
 
 /**
  * Tool 1: simulate_test_hands
@@ -200,11 +202,16 @@ export function handleExploreComboTree(
     };
   });
 
+  const mdReport = generateComboTreeMarkdownReport(search, { hand: params.hand }, registry);
+  const reportPath = saveComboTreeMarkdownReport(mdReport, { hand: params.hand });
+
   return {
     hand_analyzed: params.hand,
     nodes_evaluated: search.nodesEvaluated,
     unique_ybn_endpoints: search.uniqueTerminals.size,
-    top_lines: topLines
+    top_lines: topLines,
+    markdown_report_path: reportPath,
+    log_file_path: Logcat.getLogFilePath() ?? undefined
   };
 }
 

@@ -95,6 +95,8 @@ export interface ExploreComboTreeResult {
   nodes_evaluated: number;
   unique_ybn_endpoints: number;
   top_lines: ComboLineCandidate[];
+  markdown_report_path?: string | undefined;
+  log_file_path?: string | undefined;
 }
 
 // ============================================================================
