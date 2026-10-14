@@ -62,10 +62,20 @@ export class CardRegistry {
   }
 
   /**
-   * Lookup a CardDefinition by official card name.
+   * Lookup a CardDefinition by official card name, case-insensitive or common suffix/alias.
    */
   public getCardByName(name: string): CardDefinition | undefined {
-    return this.cardsByName.get(name);
+    const direct = this.cardsByName.get(name);
+    if (direct) return direct;
+
+    const lower = name.toLowerCase().trim();
+    for (const [cardName, def] of this.cardsByName.entries()) {
+      const defLower = cardName.toLowerCase();
+      if (defLower === lower || defLower.endsWith(lower) || defLower.includes(lower)) {
+        return def;
+      }
+    }
+    return undefined;
   }
 
   /**

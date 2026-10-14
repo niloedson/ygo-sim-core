@@ -163,7 +163,8 @@ export function scoreGameState(
 
   // Component 3: Anti-Board Breaker Resilience Adjustments
   // Dark Ruler No More Penalty: all negates/interruptions reside strictly on Field
-  const allOnField = activeInterruptions.length > 0 && activeInterruptions.every((i) => i.layer === 'FIELD');
+  const allOnField =
+    activeInterruptions.length > 0 && activeInterruptions.every((i) => i.layer === 'FIELD');
   const darkRulerVulnerable = allOnField;
   const drnmPenalty = darkRulerVulnerable ? 2.5 : 0.0;
 
