@@ -11,3 +11,4 @@ export * from './engine/index.js';
 export * from './dsl/index.js';
 export * from './search/index.js';
 export * from './evaluator/index.js';
+export * from './mcp/index.js';

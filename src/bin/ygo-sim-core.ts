@@ -72,7 +72,10 @@ program
 
     // 5. Explore Combo Tree for specific hand
     if (options.hand) {
-      const handCards = (options.hand as string).split(',').map((s) => s.trim()).filter(Boolean);
+      const handCards = (options.hand as string)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
 
       if (options.resilience) {
         const resilience = handleEvaluateHandtrapResilience(

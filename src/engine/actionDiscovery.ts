@@ -96,20 +96,26 @@ export function discoverLegalActions(
     if (card.cardType === 'SPELL') {
       const spellType = cardDef?.spellTrapType ?? 'NORMAL';
 
-      // Spells with activation effects from hand
+      // Spells with activation effects from hand (Ignition / Normal / Field)
       if (cardDef?.effects) {
         cardDef.effects.forEach((eff, idx) => {
           if (eff.activationLocation.includes('HAND')) {
-            // Check HOPT
-            if (!eff.hoptGroup || !state.registers.hoptActivated.has(eff.hoptGroup)) {
-              actions.push({
-                id: `ACT_H_${card.instanceId}_${idx}`,
-                verb: 'ACTIVATE_HAND',
-                description: `Activate ${card.name} from hand`,
-                ygnNotation: `A(H)[${card.instanceId}:${card.name}]`,
-                sourceCard: card,
-                effectIndex: idx
-              });
+            // Reactive effects requiring chain link or opponent activation cannot be activated in Open Game State
+            const isReactive = eff.conditions.some(
+              (c) => c.type === 'CHAIN_LINK_EXISTS' || c.type === 'OPPONENT_ACTIVATED_EFFECT'
+            );
+            if (!isReactive) {
+              // Check HOPT
+              if (!eff.hoptGroup || !state.registers.hoptActivated.has(eff.hoptGroup)) {
+                actions.push({
+                  id: `ACT_H_${card.instanceId}_${idx}`,
+                  verb: 'ACTIVATE_HAND',
+                  description: `Activate ${card.name} from hand`,
+                  ygnNotation: `A(H)[${card.instanceId}:${card.name}]`,
+                  sourceCard: card,
+                  effectIndex: idx
+                });
+              }
             }
           }
         });

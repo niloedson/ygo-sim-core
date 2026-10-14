@@ -162,8 +162,12 @@ export function handleExploreComboTree(
       interruption_breakdown: {
         field_negates: item.score.breakdown.base_interruptions.monster_negates,
         backrow_disruptions: item.score.breakdown.base_interruptions.backrow_negates,
-        gy_triggers: item.score.breakdown.layer_diversification.active_layers.includes('GRAVEYARD') ? 1 : 0,
-        hand_traps: item.score.breakdown.layer_diversification.active_layers.includes('HAND') ? 1 : 0,
+        gy_triggers: item.score.breakdown.layer_diversification.active_layers.includes('GRAVEYARD')
+          ? 1
+          : 0,
+        hand_traps: item.score.breakdown.layer_diversification.active_layers.includes('HAND')
+          ? 1
+          : 0,
         distinct_layers: item.score.breakdown.layer_diversification.active_layers.length
       },
       resources_remaining: {
@@ -205,22 +209,24 @@ export function handleEvaluateHandtrapResilience(
   const threatSuite = (params.threat_suite as HandTrapThreatName[] | undefined) ?? undefined;
   const resilience = evaluateHandtrapResilience(topPlayline, threatSuite, undefined, registry);
 
-  const resilienceMatrix: HandtrapResilienceResultItem[] = resilience.resilienceMatrix.map((item) => {
-    let sev: HandtrapResilienceResultItem['chokepoint_severity'] = 'Low';
-    if (item.chokepointSeverity === 'High') sev = 'High';
-    else if (item.chokepointSeverity === 'Medium') sev = 'Med';
+  const resilienceMatrix: HandtrapResilienceResultItem[] = resilience.resilienceMatrix.map(
+    (item) => {
+      let sev: HandtrapResilienceResultItem['chokepoint_severity'] = 'Low';
+      if (item.chokepointSeverity === 'High') sev = 'High';
+      else if (item.chokepointSeverity === 'Medium') sev = 'Med';
 
-    return {
-      threat: item.threat,
-      step_injected: item.stepInjected,
-      protected_by_insulation: item.protectedByInsulation,
-      insulation_card_used: item.insulationCardUsed,
-      fallback_ybn_score: item.fallbackYbnScore,
-      survival_ratio: item.survivalRatio,
-      compromised_endpoint: item.compromisedYBN,
-      chokepoint_severity: sev
-    };
-  });
+      return {
+        threat: item.threat,
+        step_injected: item.stepInjected,
+        protected_by_insulation: item.protectedByInsulation,
+        insulation_card_used: item.insulationCardUsed,
+        fallback_ybn_score: item.fallbackYbnScore,
+        survival_ratio: item.survivalRatio,
+        compromised_endpoint: item.compromisedYBN,
+        chokepoint_severity: sev
+      };
+    }
+  );
 
   let rating: EvaluateHandtrapResilienceResult['composite_resilience_rating'] = 'F';
   if (resilience.compositeResilienceRating === 'S') rating = 'S';

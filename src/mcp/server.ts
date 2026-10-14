@@ -58,7 +58,10 @@ export function createServer(registry: CardRegistry = globalCardRegistry): Serve
             type: 'object',
             properties: {
               deck_ydk: { type: 'string', description: 'Raw .ydk deck file content' },
-              sample_size: { type: 'number', description: 'Number of hands to simulate (10-10000)' },
+              sample_size: {
+                type: 'number',
+                description: 'Number of hands to simulate (10-10000)'
+              },
               hand_size: { type: 'number', description: 'Opening hand size (5 or 6)' },
               target_archetype: { type: 'string', description: 'Optional archetype filter' }
             },
