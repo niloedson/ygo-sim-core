@@ -43,7 +43,10 @@ export function canonicalizePlayerZones(zones: PlayerZones): PlayerZones {
   };
 
   const canonicalMonsters: PlayerZones['monsters'] = {};
-  for (const [k, v] of Object.entries(zones.monsters) as [keyof PlayerZones['monsters'], CardInstance | undefined][]) {
+  for (const [k, v] of Object.entries(zones.monsters) as [
+    keyof PlayerZones['monsters'],
+    CardInstance | undefined
+  ][]) {
     if (v) {
       const sorted = sortCardMaterials(v);
       if (sorted) canonicalMonsters[k] = sorted;
@@ -51,7 +54,10 @@ export function canonicalizePlayerZones(zones: PlayerZones): PlayerZones {
   }
 
   const canonicalExtraMonsters: PlayerZones['extraMonsters'] = {};
-  for (const [k, v] of Object.entries(zones.extraMonsters) as [keyof PlayerZones['extraMonsters'], CardInstance | undefined][]) {
+  for (const [k, v] of Object.entries(zones.extraMonsters) as [
+    keyof PlayerZones['extraMonsters'],
+    CardInstance | undefined
+  ][]) {
     if (v) {
       const sorted = sortCardMaterials(v);
       if (sorted) canonicalExtraMonsters[k] = sorted;
