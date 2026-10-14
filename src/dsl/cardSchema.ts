@@ -18,16 +18,7 @@ export const CardAttributeSchema = z.enum([
   'DIVINE'
 ]);
 
-export const LinkArrowDirectionSchema = z.enum([
-  'TL',
-  'T',
-  'TR',
-  'L',
-  'R',
-  'BL',
-  'B',
-  'BR'
-]);
+export const LinkArrowDirectionSchema = z.enum(['TL', 'T', 'TR', 'L', 'R', 'BL', 'B', 'BR']);
 
 export const MonsterAttributesSchema = z.object({
   attribute: CardAttributeSchema,
@@ -155,9 +146,7 @@ export const ResolutionOperationSchema = z.object({
       attribute: CardAttributeSchema.optional()
     })
     .optional(),
-  target: z
-    .enum(['PREVIOUS_CHAIN_LINK', 'PREVIOUS_CHAIN_LINK_CARD', 'FIELD_TARGET'])
-    .optional()
+  target: z.enum(['PREVIOUS_CHAIN_LINK', 'PREVIOUS_CHAIN_LINK_CARD', 'FIELD_TARGET']).optional()
 });
 
 export const EffectDefinitionSchema = z.object({

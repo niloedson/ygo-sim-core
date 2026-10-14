@@ -12,11 +12,7 @@ import {
   cloneGameState,
   cloneCardInstance
 } from '../types/state.js';
-import type {
-  CostOperation,
-  ResolutionOperation,
-  EffectDefinition
-} from '../types/card-dsl.js';
+import type { CostOperation, ResolutionOperation, EffectDefinition } from '../types/card-dsl.js';
 import type { TimingState } from '../engine/fastEffectEngine.js';
 
 /**
@@ -29,7 +25,10 @@ export function matchesCardFilter(
 ): boolean {
   if (!filter) return true;
 
-  if (filter.excludeId && (card.passcode === filter.excludeId || card.instanceId === filter.excludeId)) {
+  if (
+    filter.excludeId &&
+    (card.passcode === filter.excludeId || card.instanceId === filter.excludeId)
+  ) {
     return false;
   }
 
@@ -130,7 +129,10 @@ export function applySpecialSummon(
       break;
   }
 
-  const idx = sourcePile.findIndex((c) => c.instanceId === card.instanceId || (c.name === card.name && c.passcode === card.passcode));
+  const idx = sourcePile.findIndex(
+    (c) =>
+      c.instanceId === card.instanceId || (c.name === card.name && c.passcode === card.passcode)
+  );
   if (idx !== -1) {
     sourcePile.splice(idx, 1);
   }
@@ -182,9 +184,10 @@ export function applyAttachMaterial(
 ): GameState {
   const next = cloneGameState(state);
   const pZones = player === 1 ? next.p1 : next.p2;
-  const targetMonster = targetZone === 'EL' || targetZone === 'ER'
-    ? pZones.extraMonsters[targetZone]
-    : pZones.monsters[targetZone];
+  const targetMonster =
+    targetZone === 'EL' || targetZone === 'ER'
+      ? pZones.extraMonsters[targetZone]
+      : pZones.monsters[targetZone];
 
   if (!targetMonster) {
     throw new Error(`Cannot attach material: no monster in target zone ${targetZone}`);
@@ -212,7 +215,9 @@ export function canPayCost(
 
   switch (cost.type) {
     case 'DISCARD_THIS_CARD':
-      return pZones.hand.some((c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name);
+      return pZones.hand.some(
+        (c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name
+      );
 
     case 'DISCARD_GENERIC_CARD':
       return pZones.hand.length >= (cost.amount ?? 1);
@@ -221,15 +226,22 @@ export function canPayCost(
       return currentLP > (cost.amount ?? 0);
 
     case 'BANISH_SELF_FROM_GY':
-      return pZones.graveyard.some((c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name);
+      return pZones.graveyard.some(
+        (c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name
+      );
 
     case 'TRIBUTE_SELF':
     case 'SEND_SELF_TO_GY':
       return true;
 
     case 'DETACH_XYZ_MATERIAL': {
-      const allMonsters = [...Object.values(pZones.monsters), ...Object.values(pZones.extraMonsters)];
-      const target = allMonsters.find((m) => m?.instanceId === sourceCard.instanceId || m?.name === sourceCard.name);
+      const allMonsters = [
+        ...Object.values(pZones.monsters),
+        ...Object.values(pZones.extraMonsters)
+      ];
+      const target = allMonsters.find(
+        (m) => m?.instanceId === sourceCard.instanceId || m?.name === sourceCard.name
+      );
       return (target?.materials?.length ?? 0) >= (cost.amount ?? 1);
     }
   }
@@ -249,7 +261,9 @@ export function applyCost(
 
   switch (cost.type) {
     case 'DISCARD_THIS_CARD': {
-      const idx = pZones.hand.findIndex((c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name);
+      const idx = pZones.hand.findIndex(
+        (c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name
+      );
       if (idx !== -1) {
         const [discarded] = pZones.hand.splice(idx, 1);
         if (discarded) {
@@ -283,7 +297,9 @@ export function applyCost(
     }
 
     case 'BANISH_SELF_FROM_GY': {
-      const idx = pZones.graveyard.findIndex((c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name);
+      const idx = pZones.graveyard.findIndex(
+        (c) => c.instanceId === sourceCard.instanceId || c.name === sourceCard.name
+      );
       if (idx !== -1) {
         const [banished] = pZones.graveyard.splice(idx, 1);
         if (banished) {
@@ -294,8 +310,13 @@ export function applyCost(
     }
 
     case 'DETACH_XYZ_MATERIAL': {
-      const allMonsters = [...Object.values(pZones.monsters), ...Object.values(pZones.extraMonsters)];
-      const target = allMonsters.find((m) => m?.instanceId === sourceCard.instanceId || m?.name === sourceCard.name);
+      const allMonsters = [
+        ...Object.values(pZones.monsters),
+        ...Object.values(pZones.extraMonsters)
+      ];
+      const target = allMonsters.find(
+        (m) => m?.instanceId === sourceCard.instanceId || m?.name === sourceCard.name
+      );
       if (target && target.materials && target.materials.length >= (cost.amount ?? 1)) {
         const detached = target.materials.shift()!;
         detached.turnSentToGY = next.turn;
@@ -308,7 +329,10 @@ export function applyCost(
     case 'TRIBUTE_SELF':
     case 'SEND_SELF_TO_GY': {
       // Find on field and move to GY
-      for (const [k, m] of Object.entries(pZones.monsters) as [MainMonsterZoneId, CardInstance | undefined][]) {
+      for (const [k, m] of Object.entries(pZones.monsters) as [
+        MainMonsterZoneId,
+        CardInstance | undefined
+      ][]) {
         if (m && (m.instanceId === sourceCard.instanceId || m.name === sourceCard.name)) {
           delete pZones.monsters[k];
           m.turnSentToGY = next.turn;
@@ -348,13 +372,15 @@ export function checkConditions(
         break;
 
       case 'CONTROL_NO_MONSTERS': {
-        const count = Object.keys(pZones.monsters).length + Object.keys(pZones.extraMonsters).length;
+        const count =
+          Object.keys(pZones.monsters).length + Object.keys(pZones.extraMonsters).length;
         if (count > 0) return false;
         break;
       }
 
       case 'OPPONENT_CONTROLS_MONSTER': {
-        const count = Object.keys(oppZones.monsters).length + Object.keys(oppZones.extraMonsters).length;
+        const count =
+          Object.keys(oppZones.monsters).length + Object.keys(oppZones.extraMonsters).length;
         if (count === 0) return false;
         break;
       }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "standardStarters": ["67234805", "83487532"],
   "primaryExtenders": ["25377819", "58836875"],
-  "insulationTargets": ["84815190", "24224830"],
+  "insulationTargets": ["84815190", "79559912", "24224830"],
   "cards": [
     {
       "id": "67234805",
@@ -288,6 +288,103 @@
           "interruptionProfile": {
             "layer": "FIELD",
             "kind": "OMNI_NEGATE",
+            "removalType": "DESTROY",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["EVENLY_MATCHED"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "10045474",
+      "name": "Infinite Impermanence",
+      "cardType": "TRAP",
+      "spellTrapType": "NORMAL",
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "imperm_negate",
+          "category": "QUICK",
+          "activationLocation": ["FIELD_S", "HAND"],
+          "spellSpeed": 2,
+          "conditions": [{ "type": "OPPONENT_CONTROLS_MONSTER" }],
+          "costs": [],
+          "resolution": [{ "type": "NEGATE_EFFECT", "target": "FIELD_TARGET" }],
+          "interruptionProfile": {
+            "layer": "BACKROW",
+            "kind": "MONSTER_NEGATE",
+            "isTargeting": true,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["DARK_RULER", "RAIGEKI", "SUPER_POLY"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "27204311",
+      "name": "Nibiru, the Primal Being",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "LIGHT",
+        "race": "Rock",
+        "levelOrRank": 11,
+        "atk": 3000,
+        "def": 600
+      },
+      "archetypes": [],
+      "taxonomyRole": "TECH_HANDTRAP",
+      "effects": [
+        {
+          "effectId": "nibiru_wipe",
+          "category": "QUICK",
+          "activationLocation": ["HAND"],
+          "spellSpeed": 2,
+          "conditions": [{ "type": "CHAIN_LINK_EXISTS" }],
+          "costs": [],
+          "resolution": [
+            { "type": "SPECIAL_SUMMON", "from": "HAND", "to": "FIELD_M" }
+          ],
+          "interruptionProfile": {
+            "layer": "HAND",
+            "kind": "SPOT_REMOVAL",
+            "removalType": "SEND_TO_GY",
+            "isTargeting": false,
+            "spellSpeed": 2,
+            "resilientAgainstWipes": ["DARK_RULER", "EVENLY_MATCHED", "SUPER_POLY", "RAIGEKI"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "79559912",
+      "name": "D/D/D Wave High King Caesar",
+      "cardType": "MONSTER",
+      "monsterAttributes": {
+        "attribute": "WATER",
+        "race": "Fiend",
+        "levelOrRank": 6,
+        "atk": 2800,
+        "def": 1800
+      },
+      "archetypes": ["D/D", "D/D/D"],
+      "taxonomyRole": "TECH_DEFENSIVE",
+      "effects": [
+        {
+          "effectId": "caesar_summon_negate",
+          "category": "QUICK",
+          "activationLocation": ["FIELD_M"],
+          "spellSpeed": 2,
+          "conditions": [{ "type": "EFFECT_INCLUDES_DECK_SEARCH_OR_MILL_OR_SS" }],
+          "costs": [{ "type": "DETACH_XYZ_MATERIAL", "amount": 1 }],
+          "resolution": [
+            { "type": "NEGATE_ACTIVATION", "target": "PREVIOUS_CHAIN_LINK" },
+            { "type": "DESTROY", "target": "PREVIOUS_CHAIN_LINK_CARD" }
+          ],
+          "interruptionProfile": {
+            "layer": "FIELD",
+            "kind": "SUMMON_NEGATE",
             "removalType": "DESTROY",
             "isTargeting": false,
             "spellSpeed": 2,
