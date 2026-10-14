@@ -10,12 +10,34 @@ import { InterruptionLayer } from './card-dsl.js';
 // Tool 1: simulate_test_hands
 // ============================================================================
 
+export interface EvaluatedComboLine {
+  line_signature: string; // e.g. "LINE#001:a3f9"
+  hand_index: number;
+  opening_hand: string[];
+  branch_type: 'PRIMARY_CEILING' | 'PROBING_AND_BAIT' | 'COMPROMISED_FALLBACK' | 'BRICK';
+  depth_reached: number;
+  ybn_score: number;
+  terminal_ybn: YBNString;
+  ygn_path: string; // RFC 0001 YGN Action Transcript
+  interruption_breakdown: {
+    field_negates: number;
+    backrow_disruptions: number;
+    gy_triggers: number;
+    hand_traps: number;
+    distinct_layers: number;
+  };
+  early_insulation_secured: boolean;
+}
+
 export interface SimulateTestHandsParams {
   deck_ydk: string; // Raw .ydk deck file string
-  sample_size?: number | undefined; // Default 1000, Max 10000
+  sample_size?: number | undefined; // Default 100, Max 10000
   hand_size?: (5 | 6) | undefined; // Default 5 (Turn 1 / Turn 0 window)
   target_archetype?: string | undefined; // Optional archetype filter
   archetype_json?: string | Record<string, unknown> | undefined; // Optional dynamic ArchetypeDAG definition
+  trace_lines?: boolean | undefined; // Enable deep combo tree line tracing
+  trace_limit?: number | undefined; // Maximum hands to evaluate in full depth (default 5-20)
+  max_depth?: number | undefined; // Search depth per line (default 40)
 }
 
 export interface SimulateTestHandsResult {
@@ -31,6 +53,8 @@ export interface SimulateTestHandsResult {
   };
   average_multi_layer_score: number;
   detected_infinite_loops: number;
+  evaluated_lines?: EvaluatedComboLine[] | undefined;
+  log_file_path?: string | undefined;
 }
 
 // ============================================================================

@@ -47,7 +47,14 @@ export function handleSimulateTestHands(
 
   const result = simulateHands(
     params.deck_ydk,
-    { sampleSize, handSize, targetArchetype: params.target_archetype },
+    {
+      sampleSize,
+      handSize,
+      targetArchetype: params.target_archetype,
+      traceLines: params.trace_lines,
+      traceLimit: params.trace_limit,
+      maxDepth: params.max_depth
+    },
     registry
   );
 
@@ -70,7 +77,9 @@ export function handleSimulateTestHands(
       '5_plus_disruptions': Math.round(threePlusRate * 0.3 * 1000) / 1000
     },
     average_multi_layer_score: 2.1,
-    detected_infinite_loops: 0
+    detected_infinite_loops: 0,
+    evaluated_lines: result.evaluatedLines,
+    log_file_path: result.logFilePath ?? undefined
   };
 }
 

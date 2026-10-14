@@ -4,6 +4,14 @@
  */
 
 import { CardRegistry, globalCardRegistry } from '../dsl/archetypeLoader.js';
+import { Logcat } from '../logging/logcat.js';
+import { exploreComboTree, Playline } from './treeTraversal.js';
+import { createInitialGameState, GameState } from '../types/state.js';
+import { computeStateHash } from '../engine/hasher.js';
+import { serializeToYBN } from '../notation/ybnSerializer.js';
+import { scoreGameState } from '../evaluator/boardScorer.js';
+import { auditInsulation } from '../engine/insulationEvaluator.js';
+import type { EvaluatedComboLine } from '../types/mcp-contracts.js';
 
 export interface ParsedDeck {
   mainDeck: string[];
@@ -12,10 +20,13 @@ export interface ParsedDeck {
 }
 
 export interface MonteCarloOptions {
-  sampleSize?: number | undefined; // e.g. 10000
+  sampleSize?: number | undefined; // e.g. 100 or 10000
   handSize?: number | undefined; // e.g. 5
   targetArchetype?: string | undefined;
   customStarterFilter?: ((passcode: string) => boolean) | undefined;
+  traceLines?: boolean | undefined; // Enable combo line exploration for sample hands
+  traceLimit?: number | undefined; // Max lines to deeply evaluate (default 10)
+  maxDepth?: number | undefined; // Max DFS depth (default 40)
 }
 
 export interface MonteCarloResult {
@@ -31,6 +42,55 @@ export interface MonteCarloResult {
     threeOrMoreStarters: number;
   };
   durationMs: number;
+  evaluatedLines?: EvaluatedComboLine[] | undefined;
+  logFilePath?: string | null | undefined;
+}
+
+/**
+ * Build a hermetic GameState from sample hand, remaining deck, and extra deck.
+ */
+function buildSampleGameState(
+  handPasscodes: string[],
+  remainingPasscodes: string[],
+  extraDeckPasscodes: string[],
+  registry: CardRegistry
+): GameState {
+  const state = createInitialGameState();
+
+  state.p1.hand = handPasscodes.map((code, idx) => {
+    const cardDef = registry.getCardById(code) ?? registry.getCardByName(code);
+    return {
+      instanceId: `#h${idx + 1}`,
+      passcode: cardDef?.id ?? code,
+      name: cardDef?.name ?? `Card ${code}`,
+      cardType: cardDef?.cardType ?? 'MONSTER',
+      levelOrRank: cardDef?.monsterAttributes?.levelOrRank
+    };
+  });
+
+  state.p1.deck = remainingPasscodes.map((code, idx) => {
+    const cardDef = registry.getCardById(code) ?? registry.getCardByName(code);
+    return {
+      instanceId: `#d${idx + 1}`,
+      passcode: code,
+      name: cardDef?.name ?? `Card ${code}`,
+      cardType: cardDef?.cardType ?? 'MONSTER',
+      levelOrRank: cardDef?.monsterAttributes?.levelOrRank
+    };
+  });
+
+  state.p1.extraDeck = extraDeckPasscodes.map((code, idx) => {
+    const cardDef = registry.getCardById(code) ?? registry.getCardByName(code);
+    return {
+      instanceId: `#ed${idx + 1}`,
+      passcode: code,
+      name: cardDef?.name ?? `ED Card ${code}`,
+      cardType: cardDef?.cardType ?? 'MONSTER',
+      levelOrRank: cardDef?.monsterAttributes?.levelOrRank
+    };
+  });
+
+  return state;
 }
 
 /**
@@ -85,7 +145,7 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 /**
  * Execute high-throughput Monte Carlo simulation across simulated hands.
- * Designed to execute 10,000 hands in <2.5 seconds.
+ * Designed to execute 10,000 hands in <2.5 seconds, or deep line tracing with sampleSize <= 100.
  */
 export function simulateHands(
   deck: ParsedDeck | string,
@@ -97,13 +157,25 @@ export function simulateHands(
   const parsed = typeof deck === 'string' ? parseYdkDeck(deck) : deck;
   const sampleSize = options.sampleSize ?? 10_000;
   const handSize = options.handSize ?? 5;
+  const maxDepth = options.maxDepth ?? 40;
+  const shouldTrace = options.traceLines ?? sampleSize <= 100;
+  const traceLimit = options.traceLimit ?? Math.min(sampleSize, 10);
   const mainDeckTemplate = [...parsed.mainDeck];
 
   if (mainDeckTemplate.length < handSize) {
+    Logcat.e(
+      'SimCore:MonteCarlo',
+      `Main deck size (${mainDeckTemplate.length}) is smaller than hand size (${handSize})`
+    );
     throw new Error(
       `Main deck size (${mainDeckTemplate.length}) is smaller than hand size (${handSize})`
     );
   }
+
+  Logcat.i(
+    'SimCore:MonteCarlo',
+    `Initiating Monte Carlo simulation: sampleSize=${sampleSize}, handSize=${handSize}, maxDepth=${maxDepth}, shouldTrace=${shouldTrace}`
+  );
 
   // Pre-classify starters in the deck for maximum throughput
   const isStarterCache = new Map<string, boolean>();
@@ -133,6 +205,8 @@ export function simulateHands(
     threeOrMoreStarters: 0
   };
 
+  const evaluatedLines: EvaluatedComboLine[] = [];
+
   // Reusable working deck buffer to avoid object reallocation in the loop
   const workingDeck = [...mainDeckTemplate];
   const deckLen = workingDeck.length;
@@ -146,9 +220,10 @@ export function simulateHands(
       workingDeck[j] = temp;
     }
 
+    const handPasscodes = workingDeck.slice(0, handSize);
     let startersInHand = 0;
     for (let i = 0; i < handSize; i++) {
-      const passcode = workingDeck[i]!;
+      const passcode = handPasscodes[i]!;
       if (isStarterCache.get(passcode)) {
         startersInHand++;
       }
@@ -169,9 +244,109 @@ export function simulateHands(
       totalCombos++;
       distribution.threeOrMoreStarters++;
     }
+
+    // Line Tracing (for sample hands up to traceLimit)
+    if (shouldTrace && evaluatedLines.length < traceLimit) {
+      const sampleState = buildSampleGameState(
+        handPasscodes,
+        workingDeck.slice(handSize),
+        parsed.extraDeck,
+        registry
+      );
+      const handHash = computeStateHash(sampleState).slice(0, 4);
+      const lineSig = `LINE#${String(s + 1).padStart(3, '0')}:${handHash}`;
+
+      const handNames = sampleState.p1.hand.map((c) => c.name);
+      Logcat.d(
+        'SimCore:MonteCarlo',
+        `Hand #${s + 1} dealt: [${handNames.join(', ')}] (starters=${startersInHand})`,
+        lineSig
+      );
+
+      if (startersInHand === 0) {
+        evaluatedLines.push({
+          line_signature: lineSig,
+          hand_index: s + 1,
+          opening_hand: handNames,
+          branch_type: 'BRICK',
+          depth_reached: 0,
+          ybn_score: 0,
+          terminal_ybn: serializeToYBN(sampleState),
+          ygn_path: '(No starters in opening hand - Brick)',
+          interruption_breakdown: {
+            field_negates: 0,
+            backrow_disruptions: 0,
+            gy_triggers: 0,
+            hand_traps: 0,
+            distinct_layers: 0
+          },
+          early_insulation_secured: false
+        });
+        Logcat.w('SimCore:MonteCarlo', `Hand #${s + 1} flagged as BRICK (zero starters)`, lineSig);
+      } else {
+        const searchResult = exploreComboTree(
+          sampleState,
+          { maxDepth, maxNodes: 300, branchLimit: 3, lineSignature: lineSig },
+          registry
+        );
+
+        // Pick highest-scoring playline
+        let bestPlayline: Playline | undefined;
+        let bestScore = -1;
+        let bestReport: ReturnType<typeof scoreGameState> | undefined;
+        let bestInsulation: ReturnType<typeof auditInsulation> | undefined;
+
+        for (const pl of searchResult.topPlaylines) {
+          const score = scoreGameState(pl.terminalState, 1, registry);
+          if (score.total_score > bestScore) {
+            bestScore = score.total_score;
+            bestPlayline = pl;
+            bestReport = score;
+            bestInsulation = auditInsulation(pl.terminalState, 1, registry);
+          }
+        }
+
+        if (bestPlayline && bestReport && bestInsulation) {
+          const breakdown = bestReport.breakdown.layer_diversification;
+          const pZones = bestPlayline.terminalState.p1;
+          evaluatedLines.push({
+            line_signature: lineSig,
+            hand_index: s + 1,
+            opening_hand: handNames,
+            branch_type: bestScore >= 4.0 ? 'PRIMARY_CEILING' : 'COMPROMISED_FALLBACK',
+            depth_reached: bestPlayline.depth,
+            ybn_score: bestScore,
+            terminal_ybn: bestPlayline.terminalYBN,
+            ygn_path: bestPlayline.ygnTranscript,
+            interruption_breakdown: {
+              field_negates: bestReport.breakdown.base_interruptions.monster_negates,
+              backrow_disruptions: bestReport.breakdown.base_interruptions.backrow_negates,
+              gy_triggers: bestReport.breakdown.followup_recursion.recyclable_gy_loopers,
+              hand_traps: pZones.hand.length,
+              distinct_layers: breakdown.active_layers.length
+            },
+            early_insulation_secured: bestInsulation.nibiruSecured
+          });
+
+          Logcat.i(
+            'SimCore:MonteCarlo',
+            `Hand #${s + 1} resolved: V(YBN)=${bestScore}, Depth=${bestPlayline.depth}, Layers=${breakdown.active_layers.join('/')}`,
+            lineSig
+          );
+        }
+      }
+    }
   }
 
   const durationMs = performance.now() - startTime;
+
+  Logcat.i(
+    'SimCore:MonteCarlo',
+    `Monte Carlo complete in ${durationMs.toFixed(1)}ms. Combo Rate: ${(
+      (totalCombos / sampleSize) *
+      100
+    ).toFixed(1)}%, Brick Rate: ${((totalBricks / sampleSize) * 100).toFixed(1)}%`
+  );
 
   return {
     totalSimulations: sampleSize,
@@ -180,6 +355,8 @@ export function simulateHands(
     brickRate: totalBricks / sampleSize,
     averageStartersPerHand: totalStartersCount / sampleSize,
     starterDistribution: distribution,
-    durationMs
+    durationMs,
+    evaluatedLines: evaluatedLines.length > 0 ? evaluatedLines : undefined,
+    logFilePath: Logcat.getLogFilePath()
   };
 }
