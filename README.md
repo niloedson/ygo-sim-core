@@ -283,13 +283,35 @@ console.log(`State Hash: ${hash}`);
 | `--hand <cards>` | `-h` | Comma-separated opening hand cards (names or passcodes) | `undefined` |
 | `--resilience` | `-r` | Run adversarial hand trap resilience stress-testing | `false` |
 | `--ybn <state>` | `-y` | Score arbitrary RFC 0001 YBN snapshot string | `undefined` |
-| `--archetype <path>` | `-a` | Path to custom archetype JSON definition | `sample_archetype.json` |
+| `--archetype <path>` | `-a` | Path to custom archetype JSON definition | Auto-discovers all in `data/archetypes/` |
 | `--help` | | Display command-line options help | |
 | `--version` | `-V` | Output version number | `1.0.0` |
 
 ---
 
-## 5. Repository Layout
+## 5. Automated Archetype Scaffolding & Bundled Datasets
+
+### 5.1 Bundled Archetypes (`data/archetypes/`)
+1. **`sample_archetype.json`:** Earth Machine test suite (*Infinitrack Harvester*, *Exceptional Schedule*, *Urgent Schedule*, *River Stormer*, *Qliphort Genius*).
+2. **`revol_bots.json`:** Complete 42-card tournament dataset for the Revol Bots & Sky Striker hybrid (*R.B. Stage Landing*, *Cyanos*, *VALCan Booster*, *Hornet Drones*, *Engage!*, *The Brute Blues*, handtrap suites).
+
+### 5.2 Automated `.ydk` Scaffolder (`scripts/scaffold-archetype.mjs`)
+To onboard any new decklist into `ygo-sim-core` in seconds:
+```bash
+# Convert any tournament .ydk into a validated ArchetypeDAG
+node scripts/scaffold-archetype.mjs "path/to/deck.ydk" [data/archetypes/my_deck.json]
+
+# Or via npm convenience script:
+npm run scaffold:archetype -- "path/to/deck.ydk"
+```
+The script reads card passcodes from `.ydk`, extracts full stats and attributes from the local SQLite `cards.db`, classifies cards into functional taxonomy roles (`[STARTER-NS]`, `[STARTER-SS]`, `[EXTENDER]`, `[TECH-HT]`, `[TECH-BREAKER]`), and outputs a validated `ArchetypeDAG` JSON schema.
+
+### 5.3 Dynamic Auto-Discovery (`loadAllArchetypes()`)
+When started in MCP server mode or via the CLI without `-a`, `ygo-sim-core` automatically scans `data/archetypes/*.json` across package and environment directories, indexing all cards into the global card registry on launch.
+
+---
+
+## 6. Repository Layout
 
 ```text
 ygo-sim-core/
@@ -297,7 +319,10 @@ ygo-sim-core/
 │   └── ygo-sim-core.ts          # Root CLI launcher proxy
 ├── data/
 │   └── archetypes/
-│       └── sample_archetype.json # Earth Machine & Tech Staples Dataset
+│       ├── sample_archetype.json # Earth Machine & Tech Staples Dataset
+│       └── revol_bots.json       # Revol Bots & Sky Striker Machine Dataset
+├── scripts/
+│   └── scaffold-archetype.mjs   # Rapid .ydk -> ArchetypeDAG generator via cards.db
 ├── src/
 │   ├── bin/
 │   │   └── ygo-sim-core.ts      # Compiled CLI binary entrypoint
