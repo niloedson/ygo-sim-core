@@ -3,8 +3,9 @@
  * @description Ingestion and registry management for Declarative Archetype Action DAGs.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { ArchetypeDAG, CardDefinition } from '../types/card-dsl.js';
 import { validateArchetypeDAG } from './cardSchema.js';
 
@@ -115,3 +116,54 @@ export function loadArchetype(filePathOrJson: string): ArchetypeDAG {
 export function getCard(idOrName: string): CardDefinition | undefined {
   return globalCardRegistry.getCardById(idOrName) ?? globalCardRegistry.getCardByName(idOrName);
 }
+
+/**
+ * Automatically discovers and loads all archetype JSON files from candidate directories.
+ */
+export function loadAllArchetypes(
+  targetDir?: string,
+  registry: CardRegistry = globalCardRegistry
+): number {
+  const candidateDirs: string[] = [];
+  if (targetDir) {
+    candidateDirs.push(resolve(targetDir));
+  } else {
+    try {
+      const packageArchetypes = fileURLToPath(new URL('../../data/archetypes', import.meta.url));
+      candidateDirs.push(packageArchetypes);
+    } catch {
+      // In bundled or non-ESM environments
+    }
+    candidateDirs.push(
+      resolve(process.cwd(), 'data/archetypes'),
+      resolve(process.cwd(), '../data/archetypes'),
+      resolve(process.cwd(), '../ygo-sim-core/data/archetypes'),
+      resolve(process.cwd(), '../../ygo-sim-core/data/archetypes')
+    );
+  }
+
+  let totalLoaded = 0;
+  for (const dir of candidateDirs) {
+    if (existsSync(dir)) {
+      try {
+        const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+        for (const file of files) {
+          try {
+            const filePath = resolve(dir, file);
+            registry.loadFromFile(filePath);
+            totalLoaded++;
+          } catch {
+            // Ignore non-archetype JSONs
+          }
+        }
+        if (totalLoaded > 0) {
+          break; // Successfully loaded from this candidate directory
+        }
+      } catch {
+        // Continue to next candidate
+      }
+    }
+  }
+  return totalLoaded;
+}
+

@@ -15,6 +15,7 @@ export interface SimulateTestHandsParams {
   sample_size?: number | undefined; // Default 1000, Max 10000
   hand_size?: (5 | 6) | undefined; // Default 5 (Turn 1 / Turn 0 window)
   target_archetype?: string | undefined; // Optional archetype filter
+  archetype_json?: string | Record<string, unknown> | undefined; // Optional dynamic ArchetypeDAG definition
 }
 
 export interface SimulateTestHandsResult {

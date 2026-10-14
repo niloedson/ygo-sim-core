@@ -11,7 +11,7 @@ import {
   handleEvaluateHandtrapResilience,
   handleScoreYbnState
 } from '../mcp/handlers.js';
-import { loadArchetype, globalCardRegistry } from '../dsl/archetypeLoader.js';
+import { loadArchetype, loadAllArchetypes, globalCardRegistry } from '../dsl/archetypeLoader.js';
 
 export const program = new Command();
 
@@ -26,17 +26,18 @@ program
   .option('-y, --ybn <state>', 'Score arbitrary RFC 0001 YBN snapshot string')
   .option('-a, --archetype <path>', 'Path to archetype JSON definition')
   .action((options) => {
-    // 1. Load Archetype if specified or default
-    const archetypePath = options.archetype
-      ? resolve(options.archetype)
-      : resolve(process.cwd(), 'data/archetypes/sample_archetype.json');
-
-    if (existsSync(archetypePath)) {
-      try {
-        loadArchetype(archetypePath);
-      } catch {
-        // Continue even if custom file has errors
+    // 1. Load Archetypes: either explicitly specified or all discovered in candidate paths
+    if (options.archetype) {
+      const archetypePath = resolve(options.archetype);
+      if (existsSync(archetypePath)) {
+        try {
+          loadArchetype(archetypePath);
+        } catch {
+          // Continue even if custom file has errors
+        }
       }
+    } else {
+      loadAllArchetypes();
     }
 
     // 2. Score standalone YBN string

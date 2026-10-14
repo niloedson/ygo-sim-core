@@ -17,21 +17,12 @@ import {
   handleEvaluateHandtrapResilience,
   handleScoreYbnState
 } from './handlers.js';
-import { CardRegistry, globalCardRegistry, loadArchetype } from '../dsl/archetypeLoader.js';
-import { resolve } from 'node:path';
-import { existsSync } from 'node:fs';
+import { CardRegistry, globalCardRegistry, loadAllArchetypes } from '../dsl/archetypeLoader.js';
 
 export function createServer(registry: CardRegistry = globalCardRegistry): Server {
-  // Ensure default sample archetype is loaded if registry is empty
+  // Ensure archetypes are loaded if registry is empty
   if (registry.getAllCards().length === 0) {
-    const defaultArchetype = resolve(process.cwd(), 'data/archetypes/sample_archetype.json');
-    if (existsSync(defaultArchetype)) {
-      try {
-        loadArchetype(defaultArchetype);
-      } catch {
-        // Fallback for custom environments
-      }
-    }
+    loadAllArchetypes(undefined, registry);
   }
 
   const server = new Server(
@@ -63,7 +54,11 @@ export function createServer(registry: CardRegistry = globalCardRegistry): Serve
                 description: 'Number of hands to simulate (10-10000)'
               },
               hand_size: { type: 'number', description: 'Opening hand size (5 or 6)' },
-              target_archetype: { type: 'string', description: 'Optional archetype filter' }
+              target_archetype: { type: 'string', description: 'Optional archetype filter' },
+              archetype_json: {
+                type: 'string',
+                description: 'Optional JSON string containing custom ArchetypeDAG definition'
+              }
             },
             required: ['deck_ydk']
           }

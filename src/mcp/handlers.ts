@@ -30,6 +30,18 @@ export function handleSimulateTestHands(
   params: SimulateTestHandsParams,
   registry: CardRegistry = globalCardRegistry
 ): SimulateTestHandsResult {
+  if (params.archetype_json) {
+    try {
+      if (typeof params.archetype_json === 'string') {
+        registry.loadFromJSON(params.archetype_json);
+      } else {
+        registry.registerArchetype(params.archetype_json as any);
+      }
+    } catch {
+      // Ignore invalid dynamic archetype
+    }
+  }
+
   const sampleSize = Math.min(10_000, Math.max(10, params.sample_size ?? 1_000));
   const handSize = params.hand_size ?? 5;
 
