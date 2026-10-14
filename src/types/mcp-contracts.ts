@@ -12,9 +12,9 @@ import { InterruptionLayer } from './card-dsl.js';
 
 export interface SimulateTestHandsParams {
   deck_ydk: string; // Raw .ydk deck file string
-  sample_size?: number; // Default 1000, Max 10000
-  hand_size?: 5 | 6; // Default 5 (Turn 1 / Turn 0 window)
-  target_archetype?: string; // Optional archetype filter
+  sample_size?: number | undefined; // Default 1000, Max 10000
+  hand_size?: (5 | 6) | undefined; // Default 5 (Turn 1 / Turn 0 window)
+  target_archetype?: string | undefined; // Optional archetype filter
 }
 
 export interface SimulateTestHandsResult {
@@ -39,8 +39,8 @@ export interface SimulateTestHandsResult {
 export interface ExploreComboTreeParams {
   hand: string[]; // 5-6 Card Names or Passcodes
   deck_ydk: string; // Remaining deck context
-  max_depth?: number; // Traversal search depth (default 8, max 15)
-  branch_limit?: number; // Top N distinct terminal paths (default 3, max 10)
+  max_depth?: number | undefined; // Traversal search depth (default 8, max 15)
+  branch_limit?: number | undefined; // Top N distinct terminal paths (default 3, max 10)
 }
 
 export interface ComboLineCandidate {
@@ -79,17 +79,17 @@ export interface ExploreComboTreeResult {
 export interface EvaluateHandtrapResilienceParams {
   hand: string[];
   deck_ydk: string;
-  threat_suite?: string[]; // e.g. ["Ash Blossom", "Infinite Impermanence", "Nibiru"]
+  threat_suite?: string[] | undefined; // e.g. ["Ash Blossom", "Infinite Impermanence", "Nibiru"]
 }
 
 export interface HandtrapResilienceResultItem {
   threat: string;
   step_injected: number;
   protected_by_insulation: boolean;
-  insulation_card_used?: string;
+  insulation_card_used?: string | undefined;
   fallback_ybn_score: number;
   survival_ratio: number; // V(YBN_fallback) / V(YBN_ceiling)
-  compromised_endpoint?: YBNString;
+  compromised_endpoint?: YBNString | undefined;
   chokepoint_severity: 'Low' | 'Med' | 'High' | 'Fatal';
 }
 

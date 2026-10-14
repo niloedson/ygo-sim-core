@@ -12,10 +12,10 @@ export interface ParsedDeck {
 }
 
 export interface MonteCarloOptions {
-  sampleSize?: number; // e.g. 10000
-  handSize?: number; // e.g. 5
-  targetArchetype?: string;
-  customStarterFilter?: (passcode: string) => boolean;
+  sampleSize?: number | undefined; // e.g. 10000
+  handSize?: number | undefined; // e.g. 5
+  targetArchetype?: string | undefined;
+  customStarterFilter?: ((passcode: string) => boolean) | undefined;
 }
 
 export interface MonteCarloResult {
