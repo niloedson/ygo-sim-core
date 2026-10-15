@@ -28,7 +28,7 @@
     "deterministic",
     "monte-carlo"
   ],
-  "author": "Obsidian YGO Suite Team",
+  "author": "Haunted Labs (Nilo Edson <niloedson.ms@gmail.com>)",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",
