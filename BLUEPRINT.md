@@ -6,8 +6,7 @@
 **Upstream Standard:** [RFC 0001: YGN & YBN Algebraic Notation Standards](https://github.com/niloedson/ygn-standard)
 **Parent Monorepo:** `obsidian-ygo-suite` (Operational Reasoning Layer)
 **Target Repository:** `ygo-sim-core` (Standalone Computational Simulation Engine)
-**Parent Evaluation:** [`reports/architecture/deterministic_combo_simulator_six_hats_evaluation.md`](deterministic_combo_simulator_six_hats_evaluation.md)
-**Sibling Plan:** [`reports/architecture/standalone_combo_simulator_and_mcp_integration_plan.md`](standalone_combo_simulator_and_mcp_integration_plan.md)
+**Parent Architectural Decision:** [ADR-010: Standalone Deterministic Combo Simulator & Dual-MCP Integration](https://github.com/niloedson/obsidian-ygo-suite/blob/main/docs/decisions/ADR-010-standalone-combo-simulator-and-dual-mcp.md)
 
 ---
 
