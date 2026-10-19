@@ -911,7 +911,10 @@ export function applyAction(
                   const cardToSS = pZones.extraDeck[edIdx]!;
                   const openEMZ = findAvailableEMZ(next, player);
                   const openMMZ = findAvailableMMZ(next, player, registry);
-                  const targetZone = openEMZ ?? openMMZ;
+                  const targetZone =
+                    (action.targetZone as MainMonsterZoneId | ExtraMonsterZoneId) ||
+                    openEMZ ||
+                    openMMZ;
                   if (targetZone) {
                     next = applySpecialSummon(next, player, cardToSS, targetZone, 'atk', 'EXTRA_DECK');
                     next.registers.lastSummonedCard = cloneCardInstance(cardToSS);
@@ -921,7 +924,8 @@ export function applyAction(
                 const gyIdx = pZones.graveyard.findIndex((c) => c.passcode === targetCode);
                 if (gyIdx !== -1) {
                   const cardToSS = pZones.graveyard[gyIdx]!;
-                  const mmz = findAvailableMMZ(next, player, registry);
+                  const mmz =
+                    (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
                   if (mmz) {
                     next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'GRAVEYARD');
                     next.registers.lastSummonedCard = cloneCardInstance(cardToSS);
@@ -931,7 +935,8 @@ export function applyAction(
                 const deckIdx = pZones.deck.findIndex((c) => c.passcode === targetCode);
                 if (deckIdx !== -1) {
                   const cardToSS = pZones.deck[deckIdx]!;
-                  const mmz = findAvailableMMZ(next, player, registry);
+                  const mmz =
+                    (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
                   if (mmz) {
                     next = applySpecialSummon(next, player, cardToSS, mmz, 'atk', 'DECK');
                     next.registers.lastSummonedCard = cloneCardInstance(cardToSS);
@@ -1058,7 +1063,8 @@ export function applyAction(
         const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
         if (dIdx !== -1) {
           const [blade] = pZones.deck.splice(dIdx, 1);
-          const mmz = findAvailableMMZ(next, player, registry);
+          const mmz =
+            (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
           if (blade && mmz) {
             blade.position = 'atk';
             pZones.monsters[mmz] = blade;
@@ -1111,12 +1117,13 @@ export function applyAction(
         const openSTZ: SpellTrapZoneId | undefined = (
           ['S1', 'S2', 'S3', 'S4', 'S5'] as SpellTrapZoneId[]
         ).find((z) => !pZones.spells[z]);
-        if (dIdx !== -1 && openSTZ) {
+        const targetSTZ = (action.targetZone as SpellTrapZoneId) || openSTZ;
+        if (dIdx !== -1 && targetSTZ) {
           const [trap] = pZones.deck.splice(dIdx, 1);
           if (trap) {
             trap.spellTrapState = 'set';
             trap.turnSet = next.turn;
-            pZones.spells[openSTZ] = trap;
+            pZones.spells[targetSTZ] = trap;
           }
         }
         next.registers.hoptActivated.add('HOPT_SHEPHERD_SET_TRAP');
