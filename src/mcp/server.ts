@@ -77,7 +77,11 @@ export function createServer(registry: CardRegistry = globalCardRegistry): Serve
               },
               deck_ydk: { type: 'string', description: 'Remaining decklist in .ydk format' },
               max_depth: { type: 'number', description: 'Maximum DFS exploration depth' },
-              branch_limit: { type: 'number', description: 'Top N playline branches to return' }
+              branch_limit: { type: 'number', description: 'Top N playline branches to return' },
+              archetype_json: {
+                type: 'string',
+                description: 'Optional JSON string containing custom ArchetypeDAG definition'
+              }
             },
             required: ['hand', 'deck_ydk']
           }

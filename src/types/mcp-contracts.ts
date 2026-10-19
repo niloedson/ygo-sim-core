@@ -66,6 +66,7 @@ export interface ExploreComboTreeParams {
   deck_ydk: string; // Remaining deck context
   max_depth?: number | undefined; // Traversal search depth (default 8, max 15)
   branch_limit?: number | undefined; // Top N distinct terminal paths (default 3, max 10)
+  archetype_json?: string | Record<string, unknown> | undefined; // Optional dynamic ArchetypeDAG definition
 }
 
 export interface ComboLineCandidate {

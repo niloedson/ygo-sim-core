@@ -148,6 +148,18 @@ export function handleExploreComboTree(
   params: ExploreComboTreeParams,
   registry: CardRegistry = globalCardRegistry
 ): ExploreComboTreeResult {
+  if (params.archetype_json) {
+    try {
+      if (typeof params.archetype_json === 'string') {
+        registry.loadFromJSON(params.archetype_json);
+      } else {
+        registry.registerArchetype(params.archetype_json as any);
+      }
+    } catch {
+      // Ignore invalid dynamic archetype
+    }
+  }
+
   const { state } = buildStateFromHandAndDeck(params.hand, params.deck_ydk, registry);
   const maxDepth = Math.min(15, Math.max(1, params.max_depth ?? 8));
   const branchLimit = Math.min(10, Math.max(1, params.branch_limit ?? 3));
