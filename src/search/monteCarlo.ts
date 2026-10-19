@@ -257,13 +257,9 @@ export function simulateHands(
       const lineSig = `LINE#${String(s + 1).padStart(3, '0')}:${handHash}`;
 
       const handNames = sampleState.p1.hand.map((c) => c.name);
-      Logcat.d(
-        'SimCore:MonteCarlo',
-        `Hand #${s + 1} dealt: [${handNames.join(', ')}] (starters=${startersInHand})`,
-        lineSig
-      );
+      const isBrick = startersInHand === 0;
 
-      if (startersInHand === 0) {
+      if (isBrick) {
         evaluatedLines.push({
           line_signature: lineSig,
           hand_index: s + 1,
@@ -282,7 +278,11 @@ export function simulateHands(
           },
           early_insulation_secured: false
         });
-        Logcat.w('SimCore:MonteCarlo', `Hand #${s + 1} flagged as BRICK (zero starters)`, lineSig);
+        Logcat.w(
+          'SimCore:SimGame',
+          `[GAME#${String(s + 1).padStart(3, '0')}:${handHash}] HAND=[${handNames.join(', ')}] | STARTERS=0 | BRICK=1 | LINE=PASS | END_YBN=${serializeToYBN(sampleState)} | V(YBN)=0.0 | STATUS=BRICK`,
+          lineSig
+        );
       } else {
         const searchResult = exploreComboTree(
           sampleState,
@@ -309,6 +309,9 @@ export function simulateHands(
         if (bestPlayline && bestReport && bestInsulation) {
           const breakdown = bestReport.breakdown.layer_diversification;
           const pZones = bestPlayline.terminalState.p1;
+          const bestLineYgn =
+            bestPlayline.actions.map((a) => a.ygnNotation).join(' ➔ ') || '(No actions)';
+
           evaluatedLines.push({
             line_signature: lineSig,
             hand_index: s + 1,
@@ -328,11 +331,25 @@ export function simulateHands(
             early_insulation_secured: bestInsulation.nibiruSecured
           });
 
+          // Log primary game resolution
           Logcat.i(
-            'SimCore:MonteCarlo',
-            `Hand #${s + 1} resolved: V(YBN)=${bestScore}, Depth=${bestPlayline.depth}, Layers=${breakdown.active_layers.join('/')}`,
+            'SimCore:SimGame',
+            `[GAME#${String(s + 1).padStart(3, '0')}:${handHash}] HAND=[${handNames.join(', ')}] | STARTERS=${startersInHand} | BRICK=0 | LINE=${bestLineYgn} | END_YBN=${bestPlayline.terminalYBN} | V(YBN)=${bestScore} | STATUS=${bestScore >= 4.0 ? 'SUCCESS' : 'COMPROMISED'}`,
             lineSig
           );
+
+          // Log Top-3 Principal Variations for full tree traceability
+          for (let pvi = 0; pvi < Math.min(3, searchResult.topPlaylines.length); pvi++) {
+            const pl = searchResult.topPlaylines[pvi]!;
+            const plScore = scoreGameState(pl.terminalState, 1, registry).total_score;
+            const plPath =
+              pl.actions.map((a) => a.ygnNotation).join(' ➔ ') || '(No actions)';
+            Logcat.d(
+              'SimCore:PV',
+              `PV#${pvi + 1} [V(YBN)=${plScore}]: ${plPath} | TERMINAL_YBN=${pl.terminalYBN}`,
+              lineSig
+            );
+          }
         }
       }
     }
@@ -346,6 +363,11 @@ export function simulateHands(
       (totalCombos / sampleSize) *
       100
     ).toFixed(1)}%, Brick Rate: ${((totalBricks / sampleSize) * 100).toFixed(1)}%`
+  );
+
+  Logcat.i(
+    'SimCore:SimSummary',
+    `TOTAL_GAMES=${sampleSize} | COMBOS=${totalCombos} (${((totalCombos / sampleSize) * 100).toFixed(1)}%) | BRICKS=${totalBricks} (${((totalBricks / sampleSize) * 100).toFixed(1)}%) | AVG_STARTERS=${(totalStartersCount / sampleSize).toFixed(2)} | DURATION=${durationMs.toFixed(1)}ms | LOG_FILE=${Logcat.getLogFilePath() ?? 'N/A'}`
   );
 
   return {

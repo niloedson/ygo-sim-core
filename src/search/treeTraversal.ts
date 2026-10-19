@@ -134,6 +134,81 @@ export function advanceTurnOnePhases(
 }
 
 /**
+ * Stockfish Move Ordering Heuristic for Yu-Gi-Oh!
+ * Prioritizes non-committal gates and high-value value-generating actions:
+ * 1. Empty MMZ conditional spells (Engage, Hornet Drones) -> Priority 100
+ * 2. Inherent Search/SS spells (Stage Landing, Terraforming) -> Priority 85
+ * 3. Extra Deck Summons (Link, Xyz) -> Priority 70
+ * 4. On-field ignition activations -> Priority 60
+ * 5. Archetype Normal Summons -> Priority 40
+ * 6. Setting Traps / Quick-Plays -> Priority 20
+ * 7. Non-engine hand trap normal summons (Ash, Belle) -> Priority 5
+ */
+export function getActionPriority(
+  action: DiscoveredAction,
+  state: GameState,
+  registry: CardRegistry
+): number {
+  const cardDef =
+    registry.getCardById(action.sourceCard.passcode) ??
+    registry.getCardByName(action.sourceCard.name);
+  const name = action.sourceCard.name.toLowerCase();
+
+  // 1. Empty MMZ requirement cards (Sky Striker Mobilize - Engage!, Hornet Drones)
+  if (
+    name.includes('engage') ||
+    name.includes('hornet drones') ||
+    name.includes('mobilize')
+  ) {
+    const mmzCount = Object.keys(state.p1.monsters).length;
+    if (mmzCount === 0) return 100;
+  }
+
+  // 2. Free Spells / Special Summons from Hand/Deck that advance game state
+  if (action.verb === 'ACTIVATE_HAND' && action.sourceCard.cardType === 'SPELL') {
+    return 85;
+  }
+
+  // 3. Extra Deck summons (Link, Xyz)
+  if (action.verb === 'LINK_SUMMON' || action.verb === 'XYZ_SUMMON') {
+    return 70;
+  }
+
+  // 4. Field Monster Ignition Activations
+  if (action.verb === 'ACTIVATE_FIELD') {
+    return 60;
+  }
+
+  // 5. Normal Summon of Archetype Starters (e.g. Cyanos, Harvester, VALCan)
+  if (action.verb === 'NORMAL_SUMMON') {
+    if (
+      cardDef?.taxonomyRole === 'STARTER_NS' ||
+      cardDef?.taxonomyRole === 'STARTER_1_5' ||
+      cardDef?.taxonomyRole === 'STARTER_SS'
+    ) {
+      return 40;
+    }
+    // Normal Summon of non-engine hand trap without on-field trigger (Ash, Belle, Veiler)
+    if (cardDef?.taxonomyRole === 'TECH_HANDTRAP') {
+      return 5; // Very low priority: only explore as desperate normal summon
+    }
+    return 25;
+  }
+
+  // 6. Setting Traps / Quick-Plays
+  if (action.verb === 'SET_SPELL_TRAP') {
+    return 20;
+  }
+
+  // 7. GY Activations
+  if (action.verb === 'ACTIVATE_GY') {
+    return 50;
+  }
+
+  return 10;
+}
+
+/**
  * Explore combo state tree starting from an initial game state using Depth-First Search (DFS).
  */
 export function exploreComboTree(
@@ -271,8 +346,14 @@ export function exploreComboTree(
       return;
     }
 
-    // 4. Explore child branches (bounded by branchLimit)
-    const actionsToExplore = legalActions.slice(0, branchLimit);
+    // 4. Explore child branches (ordered by Gate-Preserving Move Priority)
+    const sortedActions = [...legalActions].sort((a, b) => {
+      return (
+        getActionPriority(b, currentState, registry) -
+        getActionPriority(a, currentState, registry)
+      );
+    });
+    const actionsToExplore = sortedActions.slice(0, branchLimit);
 
     for (const action of actionsToExplore) {
       try {

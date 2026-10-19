@@ -61,10 +61,48 @@ export function matchesCardFilter(
 }
 
 /**
- * Find the first available Main Monster Zone for a player.
+ * Find the optimal available Main Monster Zone for a player.
+ * Implements Greedy Zone Snapping: If active Link monsters exist in EMZ,
+ * prioritize empty MMZ zones directly pointed to by active Link arrows!
  */
-export function findAvailableMMZ(state: GameState, player: 1 | 2): MainMonsterZoneId | undefined {
+export function findAvailableMMZ(
+  state: GameState,
+  player: 1 | 2,
+  registry?: CardRegistry
+): MainMonsterZoneId | undefined {
   const zones = player === 1 ? state.p1 : state.p2;
+
+  // 1. Check for pointed zones from Extra Monster Zones (Greedy Zone Snapping)
+  const pointedZones: MainMonsterZoneId[] = [];
+
+  const checkEmzLink = (emzKey: 'EL' | 'ER', arrowMap: Record<string, MainMonsterZoneId>) => {
+    const linkCard = zones.extraMonsters[emzKey];
+    if (linkCard) {
+      let arrows: string[] = [];
+      if (registry) {
+        const def = registry.getCardById(linkCard.passcode) ?? registry.getCardByName(linkCard.name);
+        arrows = def?.monsterAttributes?.linkArrows ?? [];
+      }
+      for (const [arrow, mmz] of Object.entries(arrowMap)) {
+        if (arrows.length === 0 || arrows.includes(arrow)) {
+          if (!zones.monsters[mmz] && !pointedZones.includes(mmz)) {
+            pointedZones.push(mmz);
+          }
+        }
+      }
+    }
+  };
+
+  // EL arrows: BL -> M1, B -> M2, BR -> M3
+  checkEmzLink('EL', { BL: 'M1', B: 'M2', BR: 'M3' });
+  // ER arrows: BL -> M3, B -> M4, BR -> M5
+  checkEmzLink('ER', { BL: 'M3', B: 'M4', BR: 'M5' });
+
+  // If a pointed empty zone exists, snap to it immediately!
+  const optimalPointed = pointedZones.find((z) => !zones.monsters[z]);
+  if (optimalPointed) return optimalPointed;
+
+  // Fallback: standard natural order
   const mmzOrder: MainMonsterZoneId[] = ['M1', 'M2', 'M3', 'M4', 'M5'];
   return mmzOrder.find((z) => !zones.monsters[z]);
 }

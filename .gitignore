@@ -1,6 +1,8 @@
 node_modules/
 dist/
 *.log
+logs/
+reports/combo-trees/
 .DS_Store
 coverage/
 .vitest/
