@@ -297,6 +297,25 @@ export function discoverLegalActions(
       const cardDef =
         registry.getCardById(monster.passcode) ?? registry.getCardByName(monster.name);
 
+      // Cyanos on-summon trigger: Special Summon Roze from Deck
+      if (
+        monster.name.includes('Cyanos') &&
+        !state.registers.hoptActivated.has('HOPT_CYANOS_SUMMON')
+      ) {
+        const rozeInDeck = pZones.deck.find((c) => c.name.includes('Roze'));
+        if (rozeInDeck) {
+          actions.push({
+            id: `ACT_M_${monster.instanceId}_cyanos_ss_roze`,
+            verb: 'ACTIVATE_FIELD',
+            description: `Activate Cyanos -> Special Summon ${rozeInDeck.name} from Deck`,
+            ygnNotation: `A(${zoneKey})[${monster.instanceId}:${monster.name}]>SS(DECK:${rozeInDeck.name})`,
+            sourceCard: monster,
+            targetZone: zoneKey,
+            targetSelection: { passcode: rozeInDeck.passcode, name: rozeInDeck.name, fromLocation: 'DECK' }
+          });
+        }
+      }
+
       // Kagari on-summon salvage
       if (
         monster.name === 'Sky Striker Ace - Kagari' &&
@@ -967,8 +986,27 @@ export function applyAction(
     }
 
     case 'ACTIVATE_FIELD': {
+      // 0. Cyanos on-summon SS Roze
+      if (
+        action.sourceCard.name.includes('Cyanos') &&
+        action.id.includes('cyanos_ss_roze') &&
+        action.targetSelection
+      ) {
+        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
+        if (dIdx !== -1) {
+          const [roze] = pZones.deck.splice(dIdx, 1);
+          const mmz = findAvailableMMZ(next, player, registry);
+          if (roze && mmz) {
+            roze.position = 'atk';
+            pZones.monsters[mmz] = roze;
+            next.registers.lastSummonedCard = cloneCardInstance(roze);
+            next.gates.specialSummonCount += 1;
+          }
+        }
+        next.registers.hoptActivated.add('HOPT_CYANOS_SUMMON');
+      }
       // 1. Kagari salvage
-      if (action.sourceCard.name === 'Sky Striker Ace - Kagari' && action.targetSelection) {
+      else if (action.sourceCard.name === 'Sky Striker Ace - Kagari' && action.targetSelection) {
         const gyIdx = pZones.graveyard.findIndex(
           (c) => c.passcode === action.targetSelection!.passcode
         );

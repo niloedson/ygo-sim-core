@@ -194,15 +194,16 @@ export function getActionPriority(
     if (
       cardDef?.taxonomyRole === 'STARTER_NS' ||
       cardDef?.taxonomyRole === 'STARTER_1_5' ||
-      cardDef?.taxonomyRole === 'STARTER_SS'
+      cardDef?.taxonomyRole === 'STARTER_SS' ||
+      name.includes('cyanos')
     ) {
-      return 40;
+      return 55;
     }
-    // Normal Summon of non-engine hand trap without on-field trigger (Ash, Belle, Veiler)
-    if (cardDef?.taxonomyRole === 'TECH_HANDTRAP') {
-      return 5; // Very low priority: only explore as desperate normal summon
+    // Normal Summon of non-engine hand trap without on-field trigger (Ash, Belle, Fuwalos)
+    if (cardDef?.taxonomyRole === 'TECH_HANDTRAP' || name.includes('ash') || name.includes('fuwalos')) {
+      return -50; // Heavily deprioritize: hand traps must be preserved in hand!
     }
-    return 25;
+    return 20;
   }
 
   // 8. Setting Traps / Quick-Plays
