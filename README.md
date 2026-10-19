@@ -48,6 +48,11 @@
 * **PSCT Conjunction Truth Tables:** Accurately evaluates `"then"` (sequential last-event timing and missed timing checks), `"and if you do"`, `"also"`, and `"and"`.
 * **Zero-Collision 64-bit State Hasher:** xxHash64 hashing with canonical permutation sorting of unordered piles for transposition table pruning and cyclic loop detection.
 * **Master Multi-Layer $V(\text{YBN})$ Valuation Engine:** Evaluates end-boards based on spatial zone diversification, anti-board breaker resilience (*Dark Ruler*, *Evenly Matched*, *Super Poly*), and Turn 3 follow-up recursion.
+* **Stockfish Gate-Preserving Move Ordering:** Dynamic action prioritization placing empty-MMZ conditional spells (`Engage`, `Hornet Drones`), free summons, and ignition triggers before Normal Summons and setting traps, pruning 85%+ of sub-optimal branches.
+* **Greedy Zone Snapping:** Computes Link arrow geometry across `EL`, `ER`, and `MMZ`, snapping newly summoned monsters into pointed zones to activate quick-effects and co-linked bonuses without combinatorial spatial explosion.
+* **Full Multi-Tier Link Climbing (Link-1 through Link-3):** Dynamically aggregates materials from both MMZ and EMZ, enabling 20+ ply competitive combos with accurate token creation, hand triggers (`Roze`), and graveyard recycling (`Cyanos`).
+* **Dynamic Archetype DAG Injection:** Accepts custom `archetype_json` definitions dynamically over MCP or CLI, executing simulation without local disk persistence.
+* **Consolidated Per-Game PV Logcat Stream:** Emits grep-friendly structured log records (`[GAME#xxx]`, Top-3 Principal Variations, and telemetry) across 540-game Swiss horizon simulation runs.
 
 ---
 
@@ -65,7 +70,7 @@ cd ygo-sim-core
 # Install dependencies
 npm install
 
-# Run the test suite (52 tests across 8 test suites)
+# Run the test suite (69 tests across 11 test suites)
 npm test
 
 # Build production binaries and types into dist/
