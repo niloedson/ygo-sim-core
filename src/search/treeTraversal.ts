@@ -164,22 +164,32 @@ export function getActionPriority(
     if (mmzCount === 0) return 100;
   }
 
-  // 2. Free Spells / Special Summons from Hand/Deck that advance game state
-  if (action.verb === 'ACTIVATE_HAND' && action.sourceCard.cardType === 'SPELL') {
-    return 85;
+  // 2. Field Monster Trigger & Ignition Activations (resolve triggers immediately!)
+  if (action.verb === 'ACTIVATE_FIELD') {
+    return 95;
   }
 
-  // 3. Extra Deck summons (Link, Xyz)
+  // 3. Special Summons from Hand (Roze hand trigger, Ga10 Cutter inherent swarm)
+  if (action.verb === 'SPECIAL_SUMMON') {
+    return 90;
+  }
+
+  // 4. Free Spells / Special Summons from Hand/Deck that advance game state
+  if (action.verb === 'ACTIVATE_HAND' && action.sourceCard.cardType === 'SPELL') {
+    return 80;
+  }
+
+  // 5. Extra Deck summons (Link, Xyz)
   if (action.verb === 'LINK_SUMMON' || action.verb === 'XYZ_SUMMON') {
     return 70;
   }
 
-  // 4. Field Monster Ignition Activations
-  if (action.verb === 'ACTIVATE_FIELD') {
-    return 60;
+  // 6. GY Activations (Cyanos revive)
+  if (action.verb === 'ACTIVATE_GY') {
+    return 65;
   }
 
-  // 5. Normal Summon of Archetype Starters (e.g. Cyanos, Harvester, VALCan)
+  // 7. Normal Summon of Archetype Starters (e.g. Cyanos, Harvester, VALCan)
   if (action.verb === 'NORMAL_SUMMON') {
     if (
       cardDef?.taxonomyRole === 'STARTER_NS' ||
@@ -195,14 +205,9 @@ export function getActionPriority(
     return 25;
   }
 
-  // 6. Setting Traps / Quick-Plays
+  // 8. Setting Traps / Quick-Plays
   if (action.verb === 'SET_SPELL_TRAP') {
-    return 20;
-  }
-
-  // 7. GY Activations
-  if (action.verb === 'ACTIVATE_GY') {
-    return 50;
+    return 15;
   }
 
   return 10;

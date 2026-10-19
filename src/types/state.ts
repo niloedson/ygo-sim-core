@@ -67,6 +67,8 @@ export interface OperationalRegistries {
   hoptActivated: Set<string>; // Set of HOPT effect IDs used this turn
   soptActivated: Set<string>; // Set of card instance IDs whose SOPT effect was used
   cardsSentToGYThisTurn: Set<string>;
+  lastSummonedCard?: CardInstance | undefined;
+  lastDestroyedCard?: CardInstance | undefined;
 }
 
 export interface LingeringRestrictions {
@@ -211,7 +213,13 @@ export function cloneGameState(state: GameState): GameState {
     registers: {
       hoptActivated: new Set(state.registers.hoptActivated),
       soptActivated: new Set(state.registers.soptActivated),
-      cardsSentToGYThisTurn: new Set(state.registers.cardsSentToGYThisTurn)
+      cardsSentToGYThisTurn: new Set(state.registers.cardsSentToGYThisTurn),
+      lastSummonedCard: state.registers.lastSummonedCard
+        ? cloneCardInstance(state.registers.lastSummonedCard)
+        : undefined,
+      lastDestroyedCard: state.registers.lastDestroyedCard
+        ? cloneCardInstance(state.registers.lastDestroyedCard)
+        : undefined
     },
     locks: { ...state.locks },
     stepIndex: state.stepIndex,
