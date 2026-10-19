@@ -91,10 +91,26 @@ export function extractActiveInterruptions(
   }
 
   // 4. Retained Hand Traps
+  const totalFieldCards =
+    Object.keys(pZones.monsters).length +
+    Object.keys(pZones.extraMonsters).length +
+    Object.keys(pZones.spells).length +
+    (pZones.fieldSpell ? 1 : 0);
+
   for (const hCard of pZones.hand) {
     const cardDef = registry.getCardById(hCard.passcode) ?? registry.getCardByName(hCard.name);
     cardDef?.effects?.forEach((eff) => {
       if (eff.interruptionProfile && eff.activationLocation.includes('HAND')) {
+        // Enforce generic activation preconditions for hand traps (e.g. Mulcharmy Fuwalos / Evenly Matched)
+        const requiresEmptyField =
+          eff.conditions?.some((c) => c.type === 'CONTROL_NO_CARDS') ||
+          hCard.name.includes('Fuwalos') ||
+          hCard.name.includes('Evenly Matched');
+        if (requiresEmptyField && totalFieldCards > 0) {
+          // Strictly dead going first if controlling any cards on field
+          return;
+        }
+
         interruptions.push({
           sourceCard: hCard,
           layer: 'HAND',

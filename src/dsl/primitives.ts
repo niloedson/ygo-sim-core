@@ -428,6 +428,26 @@ export function checkConditions(
         break;
       }
 
+      case 'CONTROL_NO_CARDS': {
+        const totalCards =
+          Object.keys(pZones.monsters).length +
+          Object.keys(pZones.extraMonsters).length +
+          Object.keys(pZones.spells).length +
+          (pZones.fieldSpell ? 1 : 0);
+        if (totalCards > 0) return false;
+        break;
+      }
+
+      case 'CONTROL_NO_FACEUP_CARDS': {
+        const faceUpCards =
+          Object.values(pZones.monsters).filter((m) => m && m.position !== 'set').length +
+          Object.values(pZones.extraMonsters).filter((m) => m && m.position !== 'set').length +
+          Object.values(pZones.spells).filter((s) => s && s.spellTrapState !== 'set').length +
+          (pZones.fieldSpell && pZones.fieldSpell.spellTrapState !== 'set' ? 1 : 0);
+        if (faceUpCards > 0) return false;
+        break;
+      }
+
       case 'OPPONENT_CONTROLS_MONSTER': {
         const count =
           Object.keys(oppZones.monsters).length + Object.keys(oppZones.extraMonsters).length;

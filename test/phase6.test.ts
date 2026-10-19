@@ -7,6 +7,7 @@ import {
   scoreGameState,
   scoreYBN
 } from '../src/index.js';
+import { extractActiveInterruptions } from '../src/evaluator/boardScorer.js';
 
 describe('Phase 6: Master Multi-Layer V(YBN) Valuation Engine', () => {
   const archetypePath = resolve(process.cwd(), 'data/archetypes/sample_archetype.json');
@@ -216,6 +217,70 @@ describe('Phase 6: Master Multi-Layer V(YBN) Valuation Engine', () => {
 
       // Hand: 3 * 0.8 = 2.4, Harvester in GY = 1.5, Normal Summon preserved = 1.0 -> 4.9 subtotal
       expect(score.breakdown.followup_recursion.subtotal).toBeCloseTo(4.9);
+    });
+
+    it('enforces CONTROL_NO_CARDS on Mulcharmy Fuwalos: dead on established board, live on empty field', () => {
+      loadArchetype(resolve(process.cwd(), 'data/archetypes/staples_hand_traps.json'));
+
+      // 1. Established board with monsters/spells -> Fuwalos must be dead (0.0)
+      const establishedBoard = createInitialGameState({
+        p1: {
+          ...createInitialGameState().p1,
+          monsters: {
+            M3: {
+              instanceId: '#m1',
+              passcode: '6821579',
+              name: 'R.B. VALCan Booster',
+              cardType: 'MONSTER'
+            }
+          },
+          spells: {
+            S2: {
+              instanceId: '#s1',
+              passcode: '79859067',
+              name: 'R.B. Next Phase',
+              cardType: 'TRAP',
+              isSet: true
+            }
+          },
+          hand: [
+            {
+              instanceId: '#h1',
+              passcode: '42141493',
+              name: 'Mulcharmy Fuwalos',
+              cardType: 'MONSTER'
+            }
+          ]
+        }
+      });
+
+      const intersEstablished = extractActiveInterruptions(establishedBoard);
+      const fuwalosInEstablished = intersEstablished.find(
+        (i) => i.sourceCard.name.includes('Fuwalos')
+      );
+      expect(fuwalosInEstablished).toBeUndefined();
+
+      // 2. Empty board -> Fuwalos is live (2.0)
+      const emptyBoard = createInitialGameState({
+        p1: {
+          ...createInitialGameState().p1,
+          hand: [
+            {
+              instanceId: '#h1',
+              passcode: '42141493',
+              name: 'Mulcharmy Fuwalos',
+              cardType: 'MONSTER'
+            }
+          ]
+        }
+      });
+
+      const intersEmpty = extractActiveInterruptions(emptyBoard);
+      const fuwalosInEmpty = intersEmpty.find(
+        (i) => i.sourceCard.name.includes('Fuwalos')
+      );
+      expect(fuwalosInEmpty).toBeDefined();
+      expect(fuwalosInEmpty?.baseQuality).toBe(2.0);
     });
   });
 

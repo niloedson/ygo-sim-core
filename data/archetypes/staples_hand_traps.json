@@ -253,7 +253,7 @@
           "spellSpeed": 2,
           "conditions": [
             {
-              "type": "CONTROL_NO_MONSTERS"
+              "type": "CONTROL_NO_CARDS"
             }
           ],
           "costs": [
