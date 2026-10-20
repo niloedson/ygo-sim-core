@@ -864,14 +864,17 @@ export function applyAction(
         next.registers.hoptActivated.add(effect.hoptGroup);
       }
 
-      // 1. Hornet Drones -> Spawns Sky Striker Ace Token!
-      if (action.sourceCard.name.includes('Hornet Drones')) {
+      // 1. Token spawning (SPECIAL_SUMMON with no from or from === 'TOKEN')
+      const isTokenSpawn =
+        action.sourceCard.name.includes('Hornet Drones') ||
+        effect?.resolution.some((r) => r.type === 'SPECIAL_SUMMON' && (!r.from || (r as { from?: string }).from === 'TOKEN'));
+      if (isTokenSpawn) {
         const openMMZ = findAvailableMMZ(next, player, registry);
         if (openMMZ) {
           const token: CardInstance = {
             instanceId: `#tok_${next.stepIndex}`,
             passcode: '52340445',
-            name: 'Sky Striker Ace Token',
+            name: `${action.sourceCard.name.split(' ')[0] ?? 'Generic'} Token`,
             cardType: 'MONSTER',
             levelOrRank: 1,
             position: 'def'
@@ -881,15 +884,22 @@ export function applyAction(
           next.registers.lastSummonedCard = cloneCardInstance(token);
         }
       }
-      // 2. Funk Dock -> Placed in Field Spell zone and searches Stage Landing!
-      else if (action.sourceCard.name.includes('Funk Dock')) {
+      // 2. Field Spell placement and activation
+      else if (cardDef?.spellTrapType === 'FIELD' || action.sourceCard.name.includes('Funk Dock')) {
         const fieldCard = cloneCardInstance(action.sourceCard);
         fieldCard.spellTrapState = 'face-up';
         pZones.fieldSpell = fieldCard;
-        const slIdx = pZones.deck.findIndex((c) => c.name.includes('Stage Landing'));
-        if (slIdx !== -1) {
-          const [sl] = pZones.deck.splice(slIdx, 1);
-          if (sl) pZones.hand.push(sl);
+        // Evaluate on-activation resolution (e.g. search)
+        const searchRes = effect?.resolution.find((r) => r.type === 'SEARCH');
+        if (searchRes && searchRes.filter) {
+          const searchResult = applySearch(next, player, searchRes.filter);
+          next = searchResult.nextState;
+        } else {
+          const slIdx = pZones.deck.findIndex((c) => c.name.includes('Stage Landing'));
+          if (slIdx !== -1) {
+            const [sl] = pZones.deck.splice(slIdx, 1);
+            if (sl) pZones.hand.push(sl);
+          }
         }
       }
       // 3. Standard spell resolution
@@ -986,100 +996,92 @@ export function applyAction(
     }
 
     case 'ACTIVATE_FIELD': {
-      // 0. Cyanos on-summon SS Roze
-      if (
-        action.sourceCard.name.includes('Cyanos') &&
-        action.id.includes('cyanos_ss_roze') &&
-        action.targetSelection
-      ) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [roze] = pZones.deck.splice(dIdx, 1);
-          const mmz = findAvailableMMZ(next, player, registry);
-          if (roze && mmz) {
-            roze.position = 'atk';
-            pZones.monsters[mmz] = roze;
-            next.registers.lastSummonedCard = cloneCardInstance(roze);
-            next.gates.specialSummonCount += 1;
+      const cardDef =
+        registry.getCardById(action.sourceCard.passcode) ??
+        registry.getCardByName(action.sourceCard.name);
+      const effect = cardDef?.effects[action.effectIndex ?? 0];
+
+      // Generic target selection dispatch (Search, Mill, SS, Set, Salvage, Revive)
+      if (action.targetSelection) {
+        const { passcode, fromLocation } = action.targetSelection;
+
+        // A. From DECK
+        if (fromLocation === 'DECK') {
+          const dIdx = pZones.deck.findIndex((c) => c.passcode === passcode);
+          if (dIdx !== -1) {
+            const [selected] = pZones.deck.splice(dIdx, 1);
+            if (selected) {
+              if (action.id.includes('mill')) {
+                selected.turnSentToGY = next.turn;
+                pZones.graveyard.push(selected);
+                next.registers.cardsSentToGYThisTurn.add(selected.instanceId || selected.passcode);
+              } else if (action.id.includes('set_trap') || selected.cardType === 'TRAP') {
+                const openSTZ: SpellTrapZoneId | undefined = (
+                  ['S1', 'S2', 'S3', 'S4', 'S5'] as SpellTrapZoneId[]
+                ).find((z) => !pZones.spells[z]);
+                const targetSTZ = (action.targetZone as SpellTrapZoneId) || openSTZ;
+                if (targetSTZ) {
+                  selected.spellTrapState = 'set';
+                  selected.turnSet = next.turn;
+                  pZones.spells[targetSTZ] = selected;
+                }
+              } else if (action.id.includes('ss') || action.id.includes('float')) {
+                selected.position = 'atk';
+                const mmz =
+                  (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
+                if (mmz) {
+                  pZones.monsters[mmz] = selected;
+                  next.registers.lastSummonedCard = cloneCardInstance(selected);
+                  next.gates.specialSummonCount += 1;
+                }
+              } else {
+                // Default: Add to Hand (SEARCH)
+                pZones.hand.push(selected);
+              }
+            }
           }
         }
-        next.registers.hoptActivated.add('HOPT_CYANOS_SUMMON');
-      }
-      // 1. Kagari salvage
-      else if (action.sourceCard.name === 'Sky Striker Ace - Kagari' && action.targetSelection) {
-        const gyIdx = pZones.graveyard.findIndex(
-          (c) => c.passcode === action.targetSelection!.passcode
-        );
-        if (gyIdx !== -1) {
-          const [sp] = pZones.graveyard.splice(gyIdx, 1);
-          if (sp) pZones.hand.push(sp);
-        }
-        next.registers.hoptActivated.add('HOPT_KAGARI_SALVAGE');
-      }
-      // 2. Camellia mill
-      else if (action.sourceCard.name === 'Sky Striker Ace - Camellia' && action.targetSelection) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [milled] = pZones.deck.splice(dIdx, 1);
-          if (milled) {
-            milled.turnSentToGY = next.turn;
-            pZones.graveyard.push(milled);
-            next.registers.cardsSentToGYThisTurn.add(milled.instanceId || milled.passcode);
+        // B. From GRAVEYARD
+        else if (fromLocation === 'GRAVEYARD') {
+          const gyIdx = pZones.graveyard.findIndex((c) => c.passcode === passcode);
+          if (gyIdx !== -1) {
+            const [selected] = pZones.graveyard.splice(gyIdx, 1);
+            if (selected) {
+              if (action.id.includes('revive') || action.id.includes('ss')) {
+                selected.position = 'def';
+                const mmz =
+                  (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
+                if (mmz) {
+                  pZones.monsters[mmz] = selected;
+                  next.registers.lastSummonedCard = cloneCardInstance(selected);
+                  next.gates.specialSummonCount += 1;
+                }
+              } else {
+                // Default: Add to Hand (SALVAGE / RETRIEVE)
+                pZones.hand.push(selected);
+              }
+            }
           }
         }
-        next.registers.hoptActivated.add('HOPT_CAMELLIA_MILL');
-      }
-      // 3. VALCan Booster search
-      else if (
-        action.sourceCard.name === 'R.B. VALCan Booster' &&
-        action.id.includes('valcan_search') &&
-        action.targetSelection
-      ) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [searched] = pZones.deck.splice(dIdx, 1);
-          if (searched) pZones.hand.push(searched);
-        }
-        next.registers.hoptActivated.add('HOPT_VALCAN_SEARCH');
-      }
-      // 4. VALCan Booster revive from GY and shift zone
-      else if (
-        action.sourceCard.name === 'R.B. VALCan Booster' &&
-        action.id.includes('valcan_revive') &&
-        action.targetSelection
-      ) {
-        const gyIdx = pZones.graveyard.findIndex(
-          (c) => c.passcode === action.targetSelection!.passcode
-        );
-        if (gyIdx !== -1) {
-          const [revived] = pZones.graveyard.splice(gyIdx, 1);
-          const mmz = findAvailableMMZ(next, player, registry);
-          if (revived && mmz) {
-            revived.position = 'def';
-            pZones.monsters[mmz] = revived;
-            next.registers.lastSummonedCard = cloneCardInstance(revived);
-            next.gates.specialSummonCount += 1;
+
+        // Shift self if moving from EMZ to MMZ (e.g. VALCan Booster)
+        if (action.id.includes('valcan_revive') || action.id.includes('shift')) {
+          const emzKey =
+            pZones.extraMonsters['EL']?.instanceId === action.sourceCard.instanceId
+              ? 'EL'
+              : pZones.extraMonsters['ER']?.instanceId === action.sourceCard.instanceId
+                ? 'ER'
+                : undefined;
+          if (emzKey) {
+            const b = pZones.extraMonsters[emzKey]!;
+            delete pZones.extraMonsters[emzKey];
+            const newMmz = findAvailableMMZ(next, player, registry);
+            if (newMmz) pZones.monsters[newMmz] = b;
           }
         }
-        const emzKey =
-          pZones.extraMonsters['EL']?.instanceId === action.sourceCard.instanceId
-            ? 'EL'
-            : pZones.extraMonsters['ER']?.instanceId === action.sourceCard.instanceId
-              ? 'ER'
-              : undefined;
-        if (emzKey) {
-          const b = pZones.extraMonsters[emzKey]!;
-          delete pZones.extraMonsters[emzKey];
-          const newMmz = findAvailableMMZ(next, player, registry);
-          if (newMmz) pZones.monsters[newMmz] = b;
-        }
-        next.registers.hoptActivated.add('HOPT_VALCAN_REVIVE');
       }
-      // 5. Lambda Cannon hand-rip & self-destruction
-      else if (
-        action.sourceCard.name === 'R.B. Lambda Cannon' &&
-        action.id.includes('lambda_cannon_peek')
-      ) {
+      // 2. Self-destructing peek & pop effect (e.g. Lambda Cannon)
+      else if (action.id.includes('peek') || action.id.includes('hand_rip')) {
         next.lifePoints.player1 = Math.max(0, next.lifePoints.player1 - 1200);
         for (const [z, m] of Object.entries(pZones.monsters) as [
           MainMonsterZoneId,
@@ -1094,80 +1096,27 @@ export function applyAction(
             break;
           }
         }
-        next.registers.hoptActivated.add('HOPT_LAMBDA_CANNON_PEEK');
       }
-      // 6. Funk Dock float trigger
-      else if (action.sourceCard.name.includes('Funk Dock') && action.targetSelection) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [blade] = pZones.deck.splice(dIdx, 1);
-          const mmz =
-            (action.targetZone as MainMonsterZoneId) || findAvailableMMZ(next, player, registry);
-          if (blade && mmz) {
-            blade.position = 'atk';
-            pZones.monsters[mmz] = blade;
-            next.registers.lastSummonedCard = cloneCardInstance(blade);
-            next.gates.specialSummonCount += 1;
-          }
-        }
-        next.registers.hoptActivated.add('HOPT_FUNK_DOCK_FLOAT');
+
+      // Record HOPT generically
+      if (effect?.hoptGroup) {
+        next.registers.hoptActivated.add(effect.hoptGroup);
+      } else {
+        if (action.id.includes('cyanos_ss_roze')) next.registers.hoptActivated.add('HOPT_CYANOS_SUMMON');
+        if (action.id.includes('kagari_salvage')) next.registers.hoptActivated.add('HOPT_KAGARI_SALVAGE');
+        if (action.id.includes('camellia_mill')) next.registers.hoptActivated.add('HOPT_CAMELLIA_MILL');
+        if (action.id.includes('valcan_search')) next.registers.hoptActivated.add('HOPT_VALCAN_SEARCH');
+        if (action.id.includes('valcan_revive')) next.registers.hoptActivated.add('HOPT_VALCAN_REVIVE');
+        if (action.id.includes('lambda_cannon_peek')) next.registers.hoptActivated.add('HOPT_LAMBDA_CANNON_PEEK');
+        if (action.id.includes('lambda_blade_mill')) next.registers.hoptActivated.add('HOPT_LAMBDA_BLADE_MILL');
+        if (action.id.includes('lambda_cannon_salvage')) next.registers.hoptActivated.add('HOPT_LAMBDA_CANNON_SALVAGE');
+        if (action.id.includes('brute_blues_search')) next.registers.hoptActivated.add('HOPT_BRUTE_BLUES_SEARCH');
+        if (action.id.includes('shepherds_crook_set_trap')) next.registers.hoptActivated.add('HOPT_SHEPHERD_SET_TRAP');
+        if (action.id.includes('funk_dock_float')) next.registers.hoptActivated.add('HOPT_FUNK_DOCK_FLOAT');
       }
-      // 7. Lambda Blade mill
-      else if (action.sourceCard.name === 'R.B. Lambda Blade' && action.targetSelection) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [milled] = pZones.deck.splice(dIdx, 1);
-          if (milled) {
-            milled.turnSentToGY = next.turn;
-            pZones.graveyard.push(milled);
-            next.registers.cardsSentToGYThisTurn.add(milled.instanceId || milled.passcode);
-          }
-        }
-        next.registers.hoptActivated.add('HOPT_LAMBDA_BLADE_MILL');
-      }
-      // 8. Lambda Cannon salvage from GY
-      else if (
-        action.sourceCard.name === 'R.B. Lambda Cannon' &&
-        action.id.includes('lambda_cannon_salvage') &&
-        action.targetSelection
-      ) {
-        const gyIdx = pZones.graveyard.findIndex(
-          (c) => c.passcode === action.targetSelection!.passcode
-        );
-        if (gyIdx !== -1) {
-          const [cutter] = pZones.graveyard.splice(gyIdx, 1);
-          if (cutter) pZones.hand.push(cutter);
-        }
-        next.registers.hoptActivated.add('HOPT_LAMBDA_CANNON_SALVAGE');
-      }
-      // 9. The Brute Blues search
-      else if (action.sourceCard.name === 'R.B. The Brute Blues' && action.targetSelection) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        if (dIdx !== -1) {
-          const [sl] = pZones.deck.splice(dIdx, 1);
-          if (sl) pZones.hand.push(sl);
-        }
-        next.registers.hoptActivated.add('HOPT_BRUTE_BLUES_SEARCH');
-      }
-      // 10. Shepherd's Crook set trap
-      else if (action.sourceCard.name === "R.B. Shepherd's Crook" && action.targetSelection) {
-        const dIdx = pZones.deck.findIndex((c) => c.passcode === action.targetSelection!.passcode);
-        const openSTZ: SpellTrapZoneId | undefined = (
-          ['S1', 'S2', 'S3', 'S4', 'S5'] as SpellTrapZoneId[]
-        ).find((z) => !pZones.spells[z]);
-        const targetSTZ = (action.targetZone as SpellTrapZoneId) || openSTZ;
-        if (dIdx !== -1 && targetSTZ) {
-          const [trap] = pZones.deck.splice(dIdx, 1);
-          if (trap) {
-            trap.spellTrapState = 'set';
-            trap.turnSet = next.turn;
-            pZones.spells[targetSTZ] = trap;
-          }
-        }
-        next.registers.hoptActivated.add('HOPT_SHEPHERD_SET_TRAP');
-      }
+
       // 11. Generic cardDef effects
-      else {
+      if (!action.targetSelection && !action.id.includes('peek')) {
         const cardDef =
           registry.getCardById(action.sourceCard.passcode) ??
           registry.getCardByName(action.sourceCard.name);
