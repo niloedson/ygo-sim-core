@@ -187,12 +187,23 @@ export const CardDefinitionSchema = z.object({
   effects: z.array(EffectDefinitionSchema)
 });
 
+export const ArchetypeMilestoneSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  targetYBN: z.string().optional(),
+  requiredCardsOnField: z.array(z.string()).optional(),
+  requiredZones: z.record(z.string()).optional(),
+  targetV_YBN: z.number().optional(),
+  priorityWeight: z.number().optional()
+});
+
 export const ArchetypeDAGSchema = z.object({
   archetypeName: z.string().min(1),
   version: z.string().optional(),
   standardStarters: z.array(z.string()),
   primaryExtenders: z.array(z.string()),
   insulationTargets: z.array(z.string()),
+  milestones: z.array(ArchetypeMilestoneSchema).optional(),
   cards: z.array(CardDefinitionSchema)
 });
 

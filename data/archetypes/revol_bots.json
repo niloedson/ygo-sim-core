@@ -27,6 +27,31 @@
     "33438265",
     "25072579"
   ],
+  "milestones": [
+    {
+      "id": "MILESTONE_1_GATEWAY",
+      "label": "2-Machine Gateway in EL",
+      "targetYBN": "T1|M1|LP8000:8000|P1:EL[#ed4:R.B. VALCan Booster(atk)],H:[#d11:R.B. Funk Dock]|P2:|G:NS=0,SS=4",
+      "requiredCardsOnField": ["6821579"],
+      "requiredZones": { "EL": "R.B. VALCan Booster" },
+      "priorityWeight": 15
+    },
+    {
+      "id": "MILESTONE_2_INFO",
+      "label": "Information Engine & Swarm in M4",
+      "targetYBN": "T1|M1|LP6800:8000|P1:EL[#ed4:R.B. VALCan Booster(atk)],M4[#d37:R.B. Lambda Blade(atk)],F[#d11:R.B. Funk Dock],GY:[#d36:R.B. Lambda Cannon]|P2:|G:NS=0,SS=6",
+      "requiredCardsOnField": ["10604644", "78710386"],
+      "priorityWeight": 25
+    },
+    {
+      "id": "MILESTONE_3_CEILING",
+      "label": "Terminal Triangulation Ceiling Endboard",
+      "targetYBN": "T1|M1|LP6800:8000|P1:ER[#ed1:R.B. The Brute Blues(atk)],M2[#ed15:Prototype Sky Striker Ace - Amatsu(atk)],M3[#ed6:R.B. Shepherd's Crook(atk)],M4[#d37:R.B. Lambda Blade(atk)],M5[#d9:R.B. Ga10 Cutter(atk)],F[#d11:R.B. Funk Dock],S2[#h5:Infinite Impermanence(set)],S3[#d38:R.B. Next Phase(set)],GY:[13 Cards],B:[#d5:Cyanos],H:[#h4:Ash Blossom, #d2:Stage Landing],D:31,ED:8|P2:|G:NS=1,SS=15",
+      "requiredCardsOnField": ["32216688", "25072579", "10604644", "33438265", "78710386", "79859067"],
+      "targetV_YBN": 29.6,
+      "priorityWeight": 40
+    }
+  ],
   "cards": [
     {
       "id": "5109321",

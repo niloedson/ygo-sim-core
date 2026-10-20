@@ -6,7 +6,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { ArchetypeDAG, CardDefinition } from '../types/card-dsl.js';
+import type { ArchetypeDAG, CardDefinition, ArchetypeMilestone } from '../types/card-dsl.js';
 import { validateArchetypeDAG } from './cardSchema.js';
 
 export class CardRegistry {
@@ -84,6 +84,19 @@ export class CardRegistry {
    */
   public getArchetype(name: string): ArchetypeDAG | undefined {
     return this.archetypes.get(name);
+  }
+
+  public getMilestones(archetypeName?: string): ArchetypeMilestone[] {
+    if (archetypeName && this.archetypes.has(archetypeName)) {
+      return this.archetypes.get(archetypeName)?.milestones ?? [];
+    }
+    const allMilestones: ArchetypeMilestone[] = [];
+    for (const dag of this.archetypes.values()) {
+      if (dag.milestones) {
+        allMilestones.push(...dag.milestones);
+      }
+    }
+    return allMilestones;
   }
 
   /**

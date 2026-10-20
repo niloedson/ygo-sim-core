@@ -141,10 +141,21 @@ export interface CardDefinition {
   effects: EffectDefinition[];
 }
 
+export interface ArchetypeMilestone {
+  id: string;
+  label: string;
+  targetYBN?: string;
+  requiredCardsOnField?: string[];
+  requiredZones?: Partial<Record<string, string>>;
+  targetV_YBN?: number;
+  priorityWeight?: number;
+}
+
 export interface ArchetypeDAG {
   archetypeName: string;
   cards: CardDefinition[];
   standardStarters: string[]; // Card IDs that initiate primary combo lines
   primaryExtenders: string[];
   insulationTargets: string[]; // Bosses/Negates to deploy before Summon #5
+  milestones?: ArchetypeMilestone[]; // Strategic grandmaster milestones for A* search guidance
 }

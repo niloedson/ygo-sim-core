@@ -154,6 +154,35 @@ export function getActionPriority(
     registry.getCardByName(action.sourceCard.name);
   const name = action.sourceCard.name.toLowerCase();
 
+  // Milestone Guidance Bonus: A* heuristic guiding toward the next unreached milestone
+  const milestones = registry.getMilestones();
+  if (milestones.length > 0) {
+    for (const ms of milestones) {
+      const p1Monsters = Object.values(state.p1.monsters).concat(Object.values(state.p1.extraMonsters));
+      const p1Spells = Object.values(state.p1.spells).concat(state.p1.fieldSpell ? [state.p1.fieldSpell] : []);
+      const allP1FieldCards = p1Monsters.concat(p1Spells).filter(Boolean);
+
+      const requiredSatisfied = ms.requiredCardsOnField?.every((req: string) =>
+        allP1FieldCards.some((fc) => fc?.passcode === req || fc?.name.includes(req))
+      );
+
+      if (!requiredSatisfied) {
+        const actionTargetsRequired = ms.requiredCardsOnField?.some((req: string) =>
+          action.sourceCard.passcode === req ||
+          action.sourceCard.name.includes(req) ||
+          action.targetSelection?.passcode === req ||
+          action.targetSelection?.name.includes(req) ||
+          (action.materialsUsed && action.materialsUsed.some((m) => m.passcode === req || m.name.includes(req)))
+        );
+
+        if (actionTargetsRequired) {
+          return 110 + (ms.priorityWeight ?? 10);
+        }
+        break; // Guide toward the earliest unreached milestone
+      }
+    }
+  }
+
   // 1. Empty MMZ requirement cards (Sky Striker Mobilize - Engage!, Hornet Drones)
   if (
     name.includes('engage') ||
